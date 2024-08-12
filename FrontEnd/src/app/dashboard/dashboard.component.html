@@ -3,7 +3,7 @@
     <h1>Dashboard</h1>
     <div class="top-right-buttons">
       <button
-        *ngIf="role === 'admin'"
+        *ngIf="role === 'admin' || 'user'"
         (click)="editContent()"
         class="action-button"
       >

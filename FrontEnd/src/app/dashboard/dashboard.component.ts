@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../app.routes';
+import { Router } from '@angular/router';
 import * as mockData from '../../assets/mock-data.json';
 
 @Component({
@@ -22,7 +23,7 @@ export class DashboardComponent implements OnInit {
     Expertise: new Set<string>(),
   };
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
     const currentUser = this.authService.getCurrentUserValue();
@@ -49,7 +50,8 @@ export class DashboardComponent implements OnInit {
   }
 
   editContent() {
-    console.log('Edit content clicked');
+    console.log('Navigating to edit content page');
+    this.router.navigate(['/edit-content']); // Use Router to navigate
   }
 
   filterBy(property: string, value: string) {
