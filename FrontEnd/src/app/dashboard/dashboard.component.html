@@ -1,0 +1,19 @@
+<div>
+    <h1>Dashboard</h1>
+    <div *ngIf="role === 'admin'">
+      <!-- Admin-specific content -->
+      <button (click)="editContent()">Edit Content</button>
+    </div>
+    <div *ngIf="role === 'user'">
+      <!-- User-specific content -->
+      <p>You can view content, but cannot edit it.</p>
+    </div>
+    <button (click)="logout()">Logout</button>
+  </div>
+  <!-- Dashboard Component Template -->
+<div>
+    <h1>Dashboard</h1>
+    <button (click)="logout()">Logout</button>
+</div>
+
+  
