@@ -1,19 +1,103 @@
-<div>
+<div class="dashboard-container">
+  <div class="header">
     <h1>Dashboard</h1>
-    <div *ngIf="role === 'admin'">
-      <!-- Admin-specific content -->
-      <button (click)="editContent()">Edit Content</button>
+    <div class="top-right-buttons">
+      <button
+        *ngIf="role === 'admin'"
+        (click)="editContent()"
+        class="action-button"
+      >
+        Edit Content
+      </button>
+      <button (click)="logout()" class="logout-button">Logout</button>
     </div>
-    <div *ngIf="role === 'user'">
-      <!-- User-specific content -->
-      <p>You can view content, but cannot edit it.</p>
-    </div>
-    <button (click)="logout()">Logout</button>
   </div>
-  <!-- Dashboard Component Template -->
-<div>
-    <h1>Dashboard</h1>
-    <button (click)="logout()">Logout</button>
-</div>
+  <p class="welcome-message" *ngIf="role === 'admin'">
+    You are logged in as administrator.
+  </p>
+  <p class="welcome-message" *ngIf="role === 'user'">
+    You are logged in as user.
+  </p>
 
-  
+  <div class="search-container">
+    <input type="text" class="search-bar" placeholder="Search for employee" />
+    <button class="search-button">Search</button>
+  </div>
+
+  <div class="content-sections">
+    <div class="content-section">
+      <h2>Studios</h2>
+      <ul>
+        <li
+          *ngFor="let studio of uniqueStudios"
+          (click)="filterBy('Studio', studio)"
+          [class.selected]="selectedFilters.Studio.has(studio)"
+        >
+          {{ studio }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="content-section">
+      <h2>Job titles</h2>
+      <ul>
+        <li
+          *ngFor="let jobTitle of uniqueJobTitles"
+          (click)="filterBy('JobTitle', jobTitle)"
+          [class.selected]="selectedFilters.JobTitle.has(jobTitle)"
+        >
+          {{ jobTitle }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="content-section">
+      <h2>Projects</h2>
+      <ul>
+        <li
+          *ngFor="let project of uniqueProjects"
+          (click)="filterBy('Projects', project)"
+          [class.selected]="selectedFilters.Projects.has(project)"
+        >
+          {{ project }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="content-section">
+      <h2>Expertise</h2>
+      <ul>
+        <li
+          *ngFor="let expertise of uniqueExpertise"
+          (click)="filterBy('Expertise', expertise)"
+          [class.selected]="selectedFilters.Expertise.has(expertise)"
+        >
+          {{ expertise }}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="people-section">
+    <h2>People</h2>
+    <div *ngIf="filteredData.length === 0" class="no-people-message">
+      No people match those filters.
+    </div>
+    <div *ngFor="let person of filteredData" class="person-card">
+      <p><strong>Name:</strong> {{ person.Name }}</p>
+      <p><strong>Age:</strong> {{ person.Age }}</p>
+      <p><strong>Studio:</strong> {{ person.Studio }}</p>
+      <p><strong>Job title:</strong> {{ person.JobTitle }}</p>
+      <p><strong>Projects:</strong> {{ person.Projects.join(", ") }}</p>
+      <p><strong>Expertise:</strong> {{ person.Expertise }}</p>
+    </div>
+  </div>
+
+  <div *ngIf="role === 'admin'" class="admin-content">
+    <!-- Admin-specific content -->
+  </div>
+  <div *ngIf="role === 'user'" class="user-content">
+    <!-- User-specific content -->
+    <p>You can view content, but cannot edit it.</p>
+  </div>
+</div>
