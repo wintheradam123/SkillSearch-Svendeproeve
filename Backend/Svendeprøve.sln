@@ -5,6 +5,10 @@ VisualStudioVersion = 17.7.34202.233
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExternalEmployeeAPI", "Svendeprøve\ExternalEmployeeAPI.csproj", "{6C441D8F-EDCD-4D58-B885-BE2139FE9EB9}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHangfireCron", "EmployeeHangfireCron\EmployeeHangfireCron.csproj", "{8F8E0F7D-A729-4D43-A778-F281E0761BAF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{6001ED96-2A9D-49A9-B0DA-207429556411}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{6C441D8F-EDCD-4D58-B885-BE2139FE9EB9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C441D8F-EDCD-4D58-B885-BE2139FE9EB9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C441D8F-EDCD-4D58-B885-BE2139FE9EB9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F8E0F7D-A729-4D43-A778-F281E0761BAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F8E0F7D-A729-4D43-A778-F281E0761BAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F8E0F7D-A729-4D43-A778-F281E0761BAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F8E0F7D-A729-4D43-A778-F281E0761BAF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6001ED96-2A9D-49A9-B0DA-207429556411}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6001ED96-2A9D-49A9-B0DA-207429556411}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6001ED96-2A9D-49A9-B0DA-207429556411}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6001ED96-2A9D-49A9-B0DA-207429556411}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

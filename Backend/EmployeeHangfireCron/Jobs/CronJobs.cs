@@ -26,8 +26,6 @@ namespace GraphCronJob.Jobs
         {
             try
             {
-                // Get all users from AD.
-                //var adUsers = await GraphHelper.GetAllUsersAsync();
 
                 var users = await EmployeeHelper.GetAllUsersAsync();
 
