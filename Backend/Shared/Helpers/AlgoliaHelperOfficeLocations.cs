@@ -12,7 +12,7 @@ namespace Shared.Helpers
 {
     public static class AlgoliaHelperOfficeLocations
     {
-        public const string IndexName = "dev_EPFinder_OfficeLocations";
+        public const string IndexName = "dev_SkillSearch_OfficeLocations";
 
         public static async Task Index(IEnumerable<AlgoliaOfficeLocation> officeLocations, AlgoliaSettings settings)
         {

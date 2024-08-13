@@ -12,7 +12,7 @@ namespace Shared.Helpers
 {
     public static class AlgoliaHelperSkills
     {
-        public const string IndexName = "dev_EPFinder_Skills";
+        public const string IndexName = "dev_SkillSearch_Skills";
 
         public static async Task Index(IEnumerable<AlgoliaSkill> skills, AlgoliaSettings settings)
         {
