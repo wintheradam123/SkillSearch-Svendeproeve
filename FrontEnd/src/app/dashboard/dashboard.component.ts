@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../app.routes';
+import { AuthService } from '../Services/auth.service';
 import { Router } from '@angular/router';
 import * as mockData from '../../assets/mock-data.json';
 
@@ -29,6 +29,9 @@ export class DashboardComponent implements OnInit {
     const currentUser = this.authService.getCurrentUserValue();
     if (currentUser && currentUser.role) {
       this.role = currentUser.role;
+      console.log('User role:', this.role); // Debugging log
+    } else {
+      console.log('No user or role found');
     }
 
     // Remove duplicates
@@ -40,13 +43,14 @@ export class DashboardComponent implements OnInit {
       ...new Set(this.data.flatMap((person) => person.Projects)),
     ];
     this.uniqueExpertise = [
-      ...new Set(this.data.map((person) => person.Expertise)),
+      ...new Set(this.data.flatMap((person) => person.Expertise)),
     ];
   }
 
   logout() {
     console.log('Logout clicked');
     this.authService.logout();
+    this.router.navigate(['/login']); // Redirect to login page on logout
   }
 
   editContent() {
@@ -78,7 +82,9 @@ export class DashboardComponent implements OnInit {
         );
       const expertiseMatch =
         !this.selectedFilters.Expertise.size ||
-        this.selectedFilters.Expertise.has(person.Expertise);
+        person.Expertise.some((expertise: string) =>
+          this.selectedFilters.Expertise.has(expertise)
+        );
       return studioMatch && jobTitleMatch && projectMatch && expertiseMatch;
     });
   }

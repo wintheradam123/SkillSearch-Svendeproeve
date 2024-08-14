@@ -11,7 +11,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { EditContentComponent } from './edit-content/edit-content.component';
 
 // Services
-import { AuthService } from './auth.service';
+import { AuthService } from './Services/auth.service';
 
 // Guards
 import { RoleGuard } from './role-guard.guard';

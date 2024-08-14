@@ -1,28 +1,37 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
-import { AuthService } from './app.routes';
+import { CanActivate, Router } from '@angular/router';
+import { AuthService } from './Services/auth.service';
 
 @Injectable({
-  providedIn: 'root'})
+  providedIn: 'root',
+})
 export class RoleGuard implements CanActivate {
   constructor(private authService: AuthService, private router: Router) {}
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
+  canActivate(): boolean {
     const currentUser = this.authService.getCurrentUserValue();
-    if (!currentUser) {
-      console.log("Redirecting to login, user not logged in");
-      this.router.navigate(['/login'], { queryParams: { error: 'notLoggedIn' }});
-      return false;
-    }
 
-    const userRole = currentUser.role.toLowerCase();
-    console.log("Checking access with RoleGuard", currentUser);
+    console.log('RoleGuard - Current User:', currentUser); // Debugging log
 
-    if (userRole === 'admin' || userRole === 'user') {
-      return true;  // User is either an Admin or a User and can access the route
+    if (currentUser) {
+      // User is logged in
+      if (currentUser.role === 'admin' || currentUser.role === 'user') {
+        // User has a valid role
+        return true;
+      } else {
+        // User role is invalid, redirect to login
+        console.log('Redirecting to login, invalid role:', currentUser.role);
+        this.router.navigate(['/login'], {
+          queryParams: { error: 'notAuthorized' },
+        });
+        return false;
+      }
     } else {
-      console.log("Redirecting to login, insufficient permissions");
-      this.router.navigate(['/login'], { queryParams: { error: 'unauthorized' }});
+      // User is not logged in, redirect to login
+      console.log('Redirecting to login, user not logged in');
+      this.router.navigate(['/login'], {
+        queryParams: { error: 'notLoggedIn' },
+      });
       return false;
     }
   }
