@@ -4,79 +4,79 @@
     "Age": 30,
     "Studio": "Copenhagen",
     "JobTitle": "Accountant",
-    "Projects": ["Alfa Pharm", "A2A"],
-    "Expertise": "Accounting"
+    "Projects": [],
+    "Expertise": []
   },
   {
     "Name": "Alice",
     "Age": 25,
     "Studio": "London",
     "JobTitle": "Developer",
-    "Projects": ["Project X", "Beta App"],
-    "Expertise": "Software Development"
+    "Projects": [],
+    "Expertise": []
   },
   {
     "Name": "Bob",
     "Age": 35,
     "Studio": "Copenhagen",
     "JobTitle": "Designer",
-    "Projects": ["Creative Campaign", "Branding"],
-    "Expertise": "Graphic Design"
+    "Projects": [],
+    "Expertise": []
   },
   {
     "Name": "Carol",
     "Age": 28,
     "Studio": "New York",
     "JobTitle": "Project Manager",
-    "Projects": ["Project Y", "Gamma Plan"],
-    "Expertise": "Project Management"
+    "Projects": [],
+    "Expertise": []
   },
   {
     "Name": "Dave",
     "Age": 32,
     "Studio": "London",
     "JobTitle": "QA Tester",
-    "Projects": ["Release 1", "Alpha Test", "Asscock"],
-    "Expertise": "Quality Assurance"
+    "Projects": [],
+    "Expertise": []
   },
   {
     "Name": "Eve",
     "Age": 29,
     "Studio": "Paris",
     "JobTitle": "Analyst",
-    "Projects": ["Market Analysis", "Financial Report"],
-    "Expertise": "Data Analysis"
+    "Projects": [],
+    "Expertise": []
   },
   {
     "Name": "Frank",
     "Age": 40,
     "Studio": "New York",
     "JobTitle": "HR Manager",
-    "Projects": ["Recruitment Drive", "Policy Update", "Dickballs"],
-    "Expertise": "Human Resources"
+    "Projects": [],
+    "Expertise": []
   },
   {
     "Name": "Grace",
     "Age": 27,
     "Studio": "Copenhagen",
     "JobTitle": "Sales Manager",
-    "Projects": ["Sales Campaign", "Client Outreach"],
-    "Expertise": "Sales"
+    "Projects": [],
+    "Expertise": []
   },
   {
     "Name": "Hank",
     "Age": 31,
     "Studio": "Paris",
     "JobTitle": "Marketing Specialist",
-    "Projects": ["Ad Campaign", "Product Launch"],
-    "Expertise": "Marketing"
+    "Projects": [],
+    "Expertise": []
   },
   {
     "Name": "Ivy",
     "Age": 26,
     "Studio": "London",
     "JobTitle": "Consultant",
-    "Projects": ["Business Strategy", "Operational Improvement"],
-    "Expertise": "Consulting"
+    "Projects": [],
+    "Expertise": []
   }
 ]
