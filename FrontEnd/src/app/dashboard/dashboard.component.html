@@ -12,19 +12,12 @@
       <button (click)="logout()" class="logout-button">Logout</button>
     </div>
   </div>
-  <p class="welcome-message" *ngIf="role === 'admin'">
-    You are logged in as administrator.
-  </p>
-  <p class="welcome-message" *ngIf="role === 'user'">
-    You are logged in as user.
-  </p>
 
-  <div class="search-container">
-    <input type="text" class="search-bar" placeholder="Search for employee" />
-    <button class="search-button">Search</button>
-  </div>
+  <button (click)="toggleFilters()" class="filter-button">
+    {{ showFilters ? "Hide Filters" : "Show Filters" }}
+  </button>
 
-  <div class="content-sections">
+  <div *ngIf="showFilters" class="content-sections">
     <div class="content-section">
       <h2>Studios</h2>
       <ul>
@@ -91,13 +84,5 @@
       <p><strong>Projects:</strong> {{ person.Projects.join(", ") }}</p>
       <p><strong>Expertise:</strong> {{ person.Expertise.join(", ") }}</p>
     </div>
-  </div>
-
-  <div *ngIf="role === 'admin'" class="admin-content">
-    <!-- Admin-specific content -->
-  </div>
-  <div *ngIf="role === 'user'" class="user-content">
-    <!-- User-specific content -->
-    <p>You can view content, but cannot edit it.</p>
   </div>
 </div>
