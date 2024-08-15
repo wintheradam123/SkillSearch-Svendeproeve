@@ -1,8 +1,8 @@
 [
   {
     "id": 1,
-    "email": "admin@example.com",
-    "password": "admin123",
+    "email": "admin",
+    "password": "admin",
     "role": "admin",
     "Name": "Admin User",
     "Age": 40,
@@ -13,8 +13,8 @@
   },
   {
     "id": 2,
-    "email": "user1@example.com",
-    "password": "user123",
+    "email": "user1",
+    "password": "user",
     "role": "user",
     "Name": "John Doe",
     "Age": 30,
@@ -25,8 +25,8 @@
   },
   {
     "id": 3,
-    "email": "user2@example.com",
-    "password": "user123",
+    "email": "user2",
+    "password": "user",
     "role": "user",
     "Name": "Jane Smith",
     "Age": 28,

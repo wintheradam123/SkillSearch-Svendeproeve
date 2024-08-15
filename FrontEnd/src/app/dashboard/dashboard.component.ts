@@ -23,18 +23,17 @@ export class DashboardComponent implements OnInit {
     Expertise: new Set<string>(),
   };
 
+  showFilters: boolean = false; // New state variable to control visibility of the filter sections
+
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit() {
     const currentUser = this.authService.getCurrentUserValue();
     if (currentUser && currentUser.role) {
       this.role = currentUser.role;
-      console.log('User role:', this.role); // Debugging log
-    } else {
-      console.log('No user or role found');
+      console.log('User role:', this.role);
     }
 
-    // Remove duplicates
     this.uniqueStudios = [...new Set(this.data.map((person) => person.Studio))];
     this.uniqueJobTitles = [
       ...new Set(this.data.map((person) => person.JobTitle)),
@@ -50,12 +49,16 @@ export class DashboardComponent implements OnInit {
   logout() {
     console.log('Logout clicked');
     this.authService.logout();
-    this.router.navigate(['/login']); // Redirect to login page on logout
+    this.router.navigate(['/login']);
   }
 
   editContent() {
     console.log('Navigating to edit content page');
-    this.router.navigate(['/edit-content']); // Use Router to navigate
+    this.router.navigate(['/edit-content']);
+  }
+
+  toggleFilters() {
+    this.showFilters = !this.showFilters; // Toggle the visibility of the filter sections
   }
 
   filterBy(property: string, value: string) {
