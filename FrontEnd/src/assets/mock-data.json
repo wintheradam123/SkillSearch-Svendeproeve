@@ -1,82 +1,38 @@
 [
   {
-    "Name": "John",
+    "id": 1,
+    "email": "admin@example.com",
+    "password": "admin123",
+    "role": "admin",
+    "Name": "Admin User",
+    "Age": 40,
+    "Studio": "Headquarters",
+    "JobTitle": "Administrator",
+    "Projects": [],
+    "Expertise": []
+  },
+  {
+    "id": 2,
+    "email": "user1@example.com",
+    "password": "user123",
+    "role": "user",
+    "Name": "John Doe",
     "Age": 30,
     "Studio": "Copenhagen",
-    "JobTitle": "Accountant",
-    "Projects": ["Alfa Pharm", "A2A"],
-    "Expertise": "Accounting"
-  },
-  {
-    "Name": "Alice",
-    "Age": 25,
-    "Studio": "London",
     "JobTitle": "Developer",
-    "Projects": ["Project X", "Beta App"],
-    "Expertise": "Software Development"
+    "Projects": [],
+    "Expertise": []
   },
   {
-    "Name": "Bob",
-    "Age": 35,
-    "Studio": "Copenhagen",
-    "JobTitle": "Designer",
-    "Projects": ["Creative Campaign", "Branding"],
-    "Expertise": "Graphic Design"
-  },
-  {
-    "Name": "Carol",
+    "id": 3,
+    "email": "user2@example.com",
+    "password": "user123",
+    "role": "user",
+    "Name": "Jane Smith",
     "Age": 28,
-    "Studio": "New York",
-    "JobTitle": "Project Manager",
-    "Projects": ["Project Y", "Gamma Plan"],
-    "Expertise": "Project Management"
-  },
-  {
-    "Name": "Dave",
-    "Age": 32,
-    "Studio": "London",
-    "JobTitle": "QA Tester",
-    "Projects": ["Release 1", "Alpha Test", "Asscock"],
-    "Expertise": "Quality Assurance"
-  },
-  {
-    "Name": "Eve",
-    "Age": 29,
-    "Studio": "Paris",
-    "JobTitle": "Analyst",
-    "Projects": ["Market Analysis", "Financial Report"],
-    "Expertise": "Data Analysis"
-  },
-  {
-    "Name": "Frank",
-    "Age": 40,
-    "Studio": "New York",
-    "JobTitle": "HR Manager",
-    "Projects": ["Recruitment Drive", "Policy Update", "Dickballs"],
-    "Expertise": "Human Resources"
-  },
-  {
-    "Name": "Grace",
-    "Age": 27,
-    "Studio": "Copenhagen",
-    "JobTitle": "Sales Manager",
-    "Projects": ["Sales Campaign", "Client Outreach"],
-    "Expertise": "Sales"
-  },
-  {
-    "Name": "Hank",
-    "Age": 31,
-    "Studio": "Paris",
-    "JobTitle": "Marketing Specialist",
-    "Projects": ["Ad Campaign", "Product Launch"],
-    "Expertise": "Marketing"
-  },
-  {
-    "Name": "Ivy",
-    "Age": 26,
-    "Studio": "London",
-    "JobTitle": "Consultant",
-    "Projects": ["Business Strategy", "Operational Improvement"],
-    "Expertise": "Consulting"
+    "Studio": "Berlin",
+    "JobTitle": "Designer",
+    "Projects": [],
+    "Expertise": []
   }
 ]

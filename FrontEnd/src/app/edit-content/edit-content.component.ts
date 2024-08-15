@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../auth.service'; // Make sure this is correctly imported
+import { AuthService } from '../Services/auth.service';
+import { DataService } from '../Services/data-service.service';
 
 @Component({
   selector: 'app-edit-content',
@@ -10,28 +11,59 @@ export class EditContentComponent implements OnInit {
   role: string = '';
   projects: string[] = [];
   expertise: string[] = [];
+  selectedProjects: string[] = [];
+  selectedExpertise: string[] = [];
 
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private dataService: DataService
+  ) {}
 
   ngOnInit() {
     const currentUser = this.authService.getCurrentUserValue();
-    if (currentUser && currentUser.role) {
+    if (currentUser) {
       this.role = currentUser.role;
-      console.log('Current user role:', this.role); // Verify role output
-    } else {
-      console.log('No current user or role not set:', currentUser);
+      this.selectedProjects = currentUser.Projects || [];
+      this.selectedExpertise = currentUser.Expertise || [];
     }
+
+    this.projects = this.dataService.getProjects();
+    this.expertise = this.dataService.getExpertise();
   }
 
   addProject(project: string) {
-    if (project && !this.projects.includes(project)) {
-      this.projects.push(project);
+    if (this.role === 'admin') {
+      this.dataService.addProject(project);
+      this.projects = this.dataService.getProjects(); // Update the list
     }
   }
 
   addExpertise(expertiseItem: string) {
-    if (expertiseItem && !this.expertise.includes(expertiseItem)) {
-      this.expertise.push(expertiseItem);
+    if (this.role === 'admin') {
+      this.dataService.addExpertise(expertiseItem);
+      this.expertise = this.dataService.getExpertise(); // Update the list
     }
+  }
+
+  toggleProjectSelection(project: string) {
+    if (this.selectedProjects.includes(project)) {
+      this.selectedProjects = this.selectedProjects.filter(
+        (p) => p !== project
+      );
+    } else {
+      this.selectedProjects.push(project);
+    }
+    this.authService.updateCurrentUserProjects(this.selectedProjects);
+  }
+
+  toggleExpertiseSelection(expertiseItem: string) {
+    if (this.selectedExpertise.includes(expertiseItem)) {
+      this.selectedExpertise = this.selectedExpertise.filter(
+        (e) => e !== expertiseItem
+      );
+    } else {
+      this.selectedExpertise.push(expertiseItem);
+    }
+    this.authService.updateCurrentUserExpertise(this.selectedExpertise);
   }
 }
