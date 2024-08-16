@@ -53,7 +53,6 @@ namespace Shared.Helpers
                 }).ToList(),
                 UserPrincipalName = user.UserPrincipalName,
                 //HasImage = user.ImageSize != null && user.ImageSize != 0,
-                Role = user.Role
             }).ToList();
 
             return algoliaUsers;

@@ -2,7 +2,6 @@
 using EntityFrameworkCore.EncryptColumn.Interfaces;
 using EntityFrameworkCore.EncryptColumn.Util;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Shared.Models;
 
 // ReSharper disable StringLiteralTypo
@@ -15,7 +14,6 @@ namespace Shared
 
         public Context()
         {
-            //TODO: Move this to secrets
             _provider = new GenerateEncryptionProvider("3c80c9d4a2a75b05441e677f5d276933");
         }
 
@@ -24,18 +22,10 @@ namespace Shared
             _provider = new GenerateEncryptionProvider("3c80c9d4a2a75b05441e677f5d276933");
         }
 
-        private readonly string _connectionString =
-            "Server=(localdb)\\mssqllocaldb;Database=SkillSearchDB;Trusted_Connection=True;MultipleActiveResultSets=true";
-
         protected override void OnConfiguring(DbContextOptionsBuilder dbContextOptionsBuilder)
         {
             dbContextOptionsBuilder.UseSqlServer(
                 @"Server=CPH00301;Database=SvendeProve;Integrated Security=True;TrustServerCertificate=True");
-=======
-            dbContextOptionsBuilder.UseSqlServer(_connectionString);
-            //dbContextOptionsBuilder.UseSqlServer(
-            //    @"Server=CPH00301;Database=SkillSearch;Integrated Security=True;TrustServerCertificate=True");
->>>>>>> Stashed changes
             //dbContextOptionsBuilder.UseSqlServer(
             //    @"Server=10.22.24.204;Database=TeamFinder_Europe;User Id=tmfndr;Password=Flodhest13;TrustServerCertificate=True");
         }
