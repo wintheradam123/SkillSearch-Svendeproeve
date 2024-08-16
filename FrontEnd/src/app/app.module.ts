@@ -1,8 +1,9 @@
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module'; // Assumes your routing configuration is defined here
+import { AlgoliaReactComponent } from './algolia-react/algolia-react.component';
 
 // Components
 import { AppComponent } from './app.component';
@@ -23,6 +24,7 @@ import { CommonModule } from '@angular/common';
     LoginComponent,
     DashboardComponent,
     EditContentComponent,
+    AlgoliaReactComponent,
   ],
   imports: [
     BrowserModule,
@@ -33,5 +35,6 @@ import { CommonModule } from '@angular/common';
   ],
   providers: [AuthService, RoleGuard],
   bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {}

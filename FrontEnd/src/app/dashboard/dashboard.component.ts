@@ -1,7 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../Services/auth.service';
 import { Router } from '@angular/router';
-import * as mockData from '../../assets/mock-data.json';
+import algoliasearch from 'algoliasearch/lite';
+
+// Define the AlgoliaHit interface at the top of the file
+interface AlgoliaHit {
+  objectID: string;
+  displayName: string;
+  userPrincipalName: string;
+  officeLocation: string;
+  jobTitle: string;
+  role: string;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -10,12 +20,12 @@ import * as mockData from '../../assets/mock-data.json';
 })
 export class DashboardComponent implements OnInit {
   role: string | null = null;
-  data: any[] = (mockData as any).default;
+  data: any[] = []; // Will be populated by Algolia data
   uniqueStudios: string[] = [];
   uniqueJobTitles: string[] = [];
   uniqueProjects: string[] = [];
   uniqueExpertise: string[] = [];
-  filteredData: any[] = this.data;
+  filteredData: any[] = [];
   selectedFilters: any = {
     Studio: new Set<string>(),
     JobTitle: new Set<string>(),
@@ -23,9 +33,20 @@ export class DashboardComponent implements OnInit {
     Expertise: new Set<string>(),
   };
 
-  showFilters: boolean = false; // New state variable to control visibility of the filter sections
+  showFilters: boolean = false;
 
-  constructor(private authService: AuthService, private router: Router) {}
+  // Algolia credentials
+  algoliaAppId: string = 'UW17LRXEG9';
+  algoliaApiKey: string = '21a8d95e001480809f816fdebcdeee77';
+  algoliaIndexName: string = 'dev_SkillSearch_Users';
+
+  private algoliaClient: any;
+  private algoliaIndex: any;
+
+  constructor(private authService: AuthService, private router: Router) {
+    this.algoliaClient = algoliasearch(this.algoliaAppId, this.algoliaApiKey);
+    this.algoliaIndex = this.algoliaClient.initIndex(this.algoliaIndexName);
+  }
 
   ngOnInit() {
     const currentUser = this.authService.getCurrentUserValue();
@@ -34,16 +55,40 @@ export class DashboardComponent implements OnInit {
       console.log('User role:', this.role);
     }
 
-    this.uniqueStudios = [...new Set(this.data.map((person) => person.Studio))];
-    this.uniqueJobTitles = [
-      ...new Set(this.data.map((person) => person.JobTitle)),
-    ];
-    this.uniqueProjects = [
-      ...new Set(this.data.flatMap((person) => person.Projects)),
-    ];
-    this.uniqueExpertise = [
-      ...new Set(this.data.flatMap((person) => person.Expertise)),
-    ];
+    this.fetchAlgoliaData(); // Fetch data from Algolia
+  }
+
+  fetchAlgoliaData() {
+    this.algoliaIndex.search('').then((response: { hits: AlgoliaHit[] }) => {
+      const hits = response.hits;
+      console.log('Algolia response hits:', hits);
+
+      // Map the Algolia fields to your expected structure
+      this.data = hits.map((hit) => ({
+        Name: hit.displayName,
+        Studio: hit.officeLocation,
+        JobTitle: hit.jobTitle,
+        Role: hit.role,
+        Projects: [], // Placeholder if Projects data is not in Algolia
+        Expertise: [], // Placeholder if Expertise data is not in Algolia
+      }));
+
+      this.filteredData = this.data;
+
+      // Populate filter options based on the fetched data
+      this.uniqueStudios = [
+        ...new Set(this.data.map((person) => person.Studio)),
+      ];
+      this.uniqueJobTitles = [
+        ...new Set(this.data.map((person) => person.JobTitle)),
+      ];
+      this.uniqueProjects = [
+        ...new Set(this.data.flatMap((person) => person.Projects)),
+      ];
+      this.uniqueExpertise = [
+        ...new Set(this.data.flatMap((person) => person.Expertise)),
+      ];
+    });
   }
 
   logout() {
@@ -58,7 +103,7 @@ export class DashboardComponent implements OnInit {
   }
 
   toggleFilters() {
-    this.showFilters = !this.showFilters; // Toggle the visibility of the filter sections
+    this.showFilters = !this.showFilters;
   }
 
   filterBy(property: string, value: string) {

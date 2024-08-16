@@ -164,3 +164,6 @@ h1 {
 p {
   margin: 10px 0;
 }
+app-algolia-react {
+  border: 2px solid red; /* Temporary border to see where the component is */
+}
