@@ -14,5 +14,6 @@
         //public string? ImageUrl { get; set; } // TODO: Do we need this field in Algolia?
         public List<AlgoliaSkill>? Skills { get; set; }
         public List<AlgoliaSolution>? Solutions { get; set; }
+        public string Role { get; set; }
     }
 }
