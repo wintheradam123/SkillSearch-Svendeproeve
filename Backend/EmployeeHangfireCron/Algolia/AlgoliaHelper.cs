@@ -23,22 +23,22 @@ namespace EmployeeHangfireCron.Algolia
                    throw new Exception("Could not load app settings.");
         }
 
-        public static void IndexSettings()
-        {
-            IndexSettings settings = new IndexSettings();
-            settings.Ranking = new List<string>
-            {
-                "typo",
-                "geo",
-                "words",
-                "filters",
-                "attribute",
-                "proximity",
-                "exact",
-                "custom"
-            };
+        //public static void IndexSettings()
+        //{
+        //    IndexSettings settings = new IndexSettings();
+        //    settings.Ranking = new List<string>
+        //    {
+        //        "typo",
+        //        "geo",
+        //        "words",
+        //        "filters",
+        //        "attribute",
+        //        "proximity",
+        //        "exact",
+        //        "custom"
+        //    };
 
-            index.SetSettings(settings);
-        }
+        //    index.SetSettings(settings);
+        //}
     }
 }

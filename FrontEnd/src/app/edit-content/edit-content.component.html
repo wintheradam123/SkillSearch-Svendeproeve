@@ -1,0 +1,39 @@
+<h1>Edit Content Page</h1>
+
+<div *ngIf="role === 'admin'">
+  <input #newProject type="text" placeholder="New Project" />
+  <button (click)="addProject(newProject.value); newProject.value = ''">
+    Add Project
+  </button>
+
+  <input #newExpertise type="text" placeholder="New Expertise" />
+  <button (click)="addExpertise(newExpertise.value); newExpertise.value = ''">
+    Add Expertise
+  </button>
+</div>
+
+<div *ngIf="role === 'user' || role === 'admin'">
+  <h3>Select Projects:</h3>
+  <div *ngFor="let project of projects">
+    <input
+      type="checkbox"
+      [id]="project"
+      [value]="project"
+      (change)="toggleProjectSelection(project)"
+      [checked]="selectedProjects.includes(project)"
+    />
+    <label [for]="project">{{ project }}</label>
+  </div>
+
+  <h3>Select Expertise:</h3>
+  <div *ngFor="let expertiseItem of expertise">
+    <input
+      type="checkbox"
+      [id]="expertiseItem"
+      [value]="expertiseItem"
+      (change)="toggleExpertiseSelection(expertiseItem)"
+      [checked]="selectedExpertise.includes(expertiseItem)"
+    />
+    <label [for]="expertiseItem">{{ expertiseItem }}</label>
+  </div>
+</div>

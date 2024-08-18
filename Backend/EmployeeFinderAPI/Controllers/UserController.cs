@@ -282,30 +282,30 @@ namespace TeamFinderAPI.Controllers
                 return BadRequest("Error occurred while editing user: " + e.Message);
             }
         }
+        //TODO: Fix these methods
+        //[HttpGet("IndexAllUsers")]
+        //public async Task<IActionResult> IndexAllUsers()
+        //{
+        //    var users = await _context.Users.Include(user => user.Solutions).Include(user => user.Skills).ToListAsync();
 
-        [HttpGet("IndexAllUsers")]
-        public async Task<IActionResult> IndexAllUsers()
-        {
-            var users = await _context.Users.Include(user => user.Solutions).Include(user => user.Skills).ToListAsync();
+        //    var algoliaUsers = AlgoliaHelperUsers.TransformToAlgolia(users);
 
-            var algoliaUsers = AlgoliaHelperUsers.TransformToAlgolia(users);
+        //    await AlgoliaHelperUsers.Index(algoliaUsers);
 
-            await AlgoliaHelperUsers.Index(algoliaUsers);
+        //    return Ok();
+        //}
 
-            return Ok();
-        }
+        //[HttpGet("PartialIndexAllUsers")]
+        //public async Task<IActionResult> PartialIndexAllUsers()
+        //{
+        //    var users = await _context.Users.Include(user => user.Solutions).Include(user => user.Skills).ToListAsync();
 
-        [HttpGet("PartialIndexAllUsers")]
-        public async Task<IActionResult> PartialIndexAllUsers()
-        {
-            var users = await _context.Users.Include(user => user.Solutions).Include(user => user.Skills).ToListAsync();
+        //    var algoliaUsers = AlgoliaHelperUsers.TransformToAlgolia(users);
 
-            var algoliaUsers = AlgoliaHelperUsers.TransformToAlgolia(users);
+        //    await AlgoliaHelperUsers.PartialUpdate(algoliaUsers);
 
-            await AlgoliaHelperUsers.PartialUpdate(algoliaUsers);
-
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
         private bool UserExists(int id)
         {

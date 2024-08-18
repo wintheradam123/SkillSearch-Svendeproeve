@@ -3,7 +3,7 @@
     <h1>Dashboard</h1>
     <div class="top-right-buttons">
       <button
-        *ngIf="role === 'admin'"
+        *ngIf="role === 'admin' || role === 'user'"
         (click)="editContent()"
         class="action-button"
       >
@@ -12,26 +12,26 @@
       <button (click)="logout()" class="logout-button">Logout</button>
     </div>
   </div>
-  <p class="welcome-message" *ngIf="role === 'admin'">
-    You are logged in as administrator.
-  </p>
-  <p class="welcome-message" *ngIf="role === 'user'">
-    You are logged in as user.
-  </p>
 
-  <div class="search-container">
-    <input type="text" class="search-bar" placeholder="Search for employee" />
-    <button class="search-button">Search</button>
-  </div>
+  <!-- Algolia search bar -->
+  <app-algolia-react
+    [appId]="algoliaAppId"
+    [apiKey]="algoliaApiKey"
+    [indexName]="algoliaIndexName"
+  ></app-algolia-react>
 
-  <div class="content-sections">
+  <button (click)="toggleFilters()" class="filter-button">
+    {{ showFilters ? "Hide Filters" : "Show Filters" }}
+  </button>
+
+  <div *ngIf="showFilters" class="content-sections">
     <div class="content-section">
       <h2>Studios</h2>
       <ul>
         <li
           *ngFor="let studio of uniqueStudios"
           (click)="filterBy('Studio', studio)"
-          [class.selected]="selectedFilters.Studio.has(studio)"
+          [class.selected]="selectedFilters?.Studio?.has(studio)"
         >
           {{ studio }}
         </li>
@@ -44,7 +44,7 @@
         <li
           *ngFor="let jobTitle of uniqueJobTitles"
           (click)="filterBy('JobTitle', jobTitle)"
-          [class.selected]="selectedFilters.JobTitle.has(jobTitle)"
+          [class.selected]="selectedFilters?.JobTitle?.has(jobTitle)"
         >
           {{ jobTitle }}
         </li>
@@ -57,7 +57,7 @@
         <li
           *ngFor="let project of uniqueProjects"
           (click)="filterBy('Projects', project)"
-          [class.selected]="selectedFilters.Projects.has(project)"
+          [class.selected]="selectedFilters?.Projects?.has(project)"
         >
           {{ project }}
         </li>
@@ -70,7 +70,7 @@
         <li
           *ngFor="let expertise of uniqueExpertise"
           (click)="filterBy('Expertise', expertise)"
-          [class.selected]="selectedFilters.Expertise.has(expertise)"
+          [class.selected]="selectedFilters?.Expertise?.has(expertise)"
         >
           {{ expertise }}
         </li>
@@ -89,15 +89,7 @@
       <p><strong>Studio:</strong> {{ person.Studio }}</p>
       <p><strong>Job title:</strong> {{ person.JobTitle }}</p>
       <p><strong>Projects:</strong> {{ person.Projects.join(", ") }}</p>
-      <p><strong>Expertise:</strong> {{ person.Expertise }}</p>
+      <p><strong>Expertise:</strong> {{ person.Expertise.join(", ") }}</p>
     </div>
-  </div>
-
-  <div *ngIf="role === 'admin'" class="admin-content">
-    <!-- Admin-specific content -->
-  </div>
-  <div *ngIf="role === 'user'" class="user-content">
-    <!-- User-specific content -->
-    <p>You can view content, but cannot edit it.</p>
   </div>
 </div>

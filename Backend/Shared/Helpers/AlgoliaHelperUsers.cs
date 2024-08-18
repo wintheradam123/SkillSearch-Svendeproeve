@@ -8,7 +8,7 @@ namespace Shared.Helpers
 {
     public static class AlgoliaHelperUsers
     {
-        public const string IndexName = "dev_EPFinder";
+        public const string IndexName = "dev_SkillSearch_Users";
 
         public static async Task Index(IEnumerable<AlgoliaUser> users, AlgoliaSettings settings)
         {

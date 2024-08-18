@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExternalEmployeeAPI.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20240620080135_NewLocations")]
-    partial class NewLocations
+    [Migration("20240813221537_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
