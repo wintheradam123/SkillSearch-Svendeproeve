@@ -158,7 +158,7 @@ namespace TeamFinderAPI.Controllers
         }
 
         [HttpGet("azureId/{id}")]
-        public async Task<ActionResult<User>> GetUserAzureId(int id)
+        public async Task<ActionResult<User>> GetUserExternalId(int id)
         {
             try
             {
@@ -282,6 +282,7 @@ namespace TeamFinderAPI.Controllers
                 return BadRequest("Error occurred while editing user: " + e.Message);
             }
         }
+
         //TODO: Fix these methods
         //[HttpGet("IndexAllUsers")]
         //public async Task<IActionResult> IndexAllUsers()

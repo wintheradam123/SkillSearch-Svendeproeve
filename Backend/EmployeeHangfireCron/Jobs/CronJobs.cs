@@ -30,11 +30,12 @@ namespace GraphCronJob.Jobs
                 var users = await EmployeeHelper.GetAllUsersAsync();
 
                 var filteredUsers = FilterUsers(users);
+                var usersWithRoles = UsersWithRoles(filteredUsers);
 
                 var algoliaSettings = AlgoliaHelper.LoadAlgoliaSettings();
 
-                await IndexOfficeLocations(filteredUsers, algoliaSettings);
-                await IndexJobTitles(filteredUsers, algoliaSettings);
+                await IndexOfficeLocations(usersWithRoles, algoliaSettings);
+                await IndexJobTitles(usersWithRoles, algoliaSettings);
 
                 // TODO: Consider if we need to enrich users
                 // Enrich the AD User object with photos, slack name before saving it.
@@ -42,15 +43,15 @@ namespace GraphCronJob.Jobs
 
                 // I don't know what this list contains or is used for. So I'm not gonna use it for now.
                 var responseUserList = new List<User>();
-                responseUserList.AddRange(await _userController.PostUsersAndUpdate(filteredUsers, algoliaSettings));
+                responseUserList.AddRange(await _userController.PostUsersAndUpdate(usersWithRoles, algoliaSettings));
 
                 var deleteUsers = new List<User>();
 
                 // This code adds users from db, which is not in AD
                 foreach (var user in _userController.GetAllUsers())
                 {
-                    if (filteredUsers.Count > 0 &&
-                        filteredUsers.FirstOrDefault(x => x.ExternalId == user.ExternalId) == null)
+                    if (usersWithRoles.Count > 0 &&
+                        usersWithRoles.FirstOrDefault(x => x.ExternalId == user.ExternalId) == null)
                     {
                         deleteUsers.Add(user);
                         Console.WriteLine(
@@ -86,6 +87,29 @@ namespace GraphCronJob.Jobs
                 !filteredNames.Contains(x.DisplayName)).ToList();
 
             return filteredUsers;
+        }
+
+        // Gives admin roles to specified users
+        private static List<User> UsersWithRoles(IEnumerable<User> users)
+        {
+            List<string> emails = new()
+            {
+                "John@test.com"
+            };
+
+            var usersWithRoles = users.Where(x => emails.Contains(x.UserPrincipalName)).ToList();
+            foreach (var user in usersWithRoles)
+            {
+                user.Role = "Admin";
+            }
+
+            var usersWithoutRoles = users.Where(x => !emails.Contains(x.UserPrincipalName)).ToList();
+            foreach (var user in usersWithoutRoles)
+            {
+                user.Role = "User";
+            }
+
+            return usersWithRoles.Concat(usersWithoutRoles).ToList();
         }
 
         // Enrich users with photo. Should be done with referenced variables and not by creating new lists.
