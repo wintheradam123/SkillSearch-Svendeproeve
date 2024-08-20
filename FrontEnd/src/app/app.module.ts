@@ -17,6 +17,7 @@ import { AuthService } from './Services/auth.service';
 // Guards
 import { RoleGuard } from './role-guard.guard';
 import { CommonModule } from '@angular/common';
+import { CreateUserComponent } from './create-user/create-user.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { CommonModule } from '@angular/common';
     DashboardComponent,
     EditContentComponent,
     AlgoliaReactComponent,
+    CreateUserComponent,
   ],
   imports: [
     BrowserModule,
