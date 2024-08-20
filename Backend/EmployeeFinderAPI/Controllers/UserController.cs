@@ -13,7 +13,6 @@ namespace TeamFinderAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [EnableCors("_myAllowSpecificOrigins")]
     public class UserController : ControllerBase
     {
         /// <summary>
@@ -25,13 +24,12 @@ namespace TeamFinderAPI.Controllers
         private readonly Context _context;
 
 
-        private IMemoryCache _cache;
-        //private IUserService _userService;
+        //private IMemoryCache _cache;
 
-        public UserController(Context context, IMemoryCache cache /*, IUserService userService*/)
+        public UserController(Context context /*, IMemoryCache cache */ /*, IUserService userService*/)
         {
             _context = context;
-            _cache = cache;
+            //_cache = cache;
             //_userService = userService;
         }
 
@@ -231,23 +229,23 @@ namespace TeamFinderAPI.Controllers
         //    }
         //}
 
-        [HttpGet("clearCache")]
-        public ActionResult ClearCache()
-        {
-            try
-            {
-                if (_cache is MemoryCache concreteMemoryCache)
-                {
-                    concreteMemoryCache.Clear();
-                }
+        //[HttpGet("clearCache")]
+        //public ActionResult ClearCache()
+        //{
+        //    try
+        //    {
+        //        if (_cache is MemoryCache concreteMemoryCache)
+        //        {
+        //            concreteMemoryCache.Clear();
+        //        }
 
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return BadRequest("Error occurred while clearing cache: " + e.Message);
-            }
-        }
+        //        return Ok();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest("Error occurred while clearing cache: " + e.Message);
+        //    }
+        //}
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
