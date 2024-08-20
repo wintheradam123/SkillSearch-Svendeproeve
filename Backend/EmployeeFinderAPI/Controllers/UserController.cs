@@ -365,7 +365,7 @@ namespace TeamFinderAPI.Controllers
                     return Unauthorized();
                 }
 
-                return Ok();
+                return Ok(userToLogin);
             }
             catch (Exception e)
             {
