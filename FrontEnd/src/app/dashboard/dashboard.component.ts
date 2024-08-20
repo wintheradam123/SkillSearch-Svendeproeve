@@ -3,7 +3,6 @@ import { AuthService } from '../Services/auth.service';
 import { Router } from '@angular/router';
 import algoliasearch from 'algoliasearch/lite';
 
-// Define the AlgoliaHit interface at the top of the file
 interface AlgoliaHit {
   objectID: string;
   displayName: string;
@@ -20,7 +19,7 @@ interface AlgoliaHit {
 })
 export class DashboardComponent implements OnInit {
   role: string | null = null;
-  data: any[] = []; // Will be populated by Algolia data
+  data: any[] = [];
   uniqueStudios: string[] = [];
   uniqueJobTitles: string[] = [];
   uniqueProjects: string[] = [];
@@ -34,6 +33,7 @@ export class DashboardComponent implements OnInit {
   };
 
   showFilters: boolean = false;
+  searchQuery: string = ''; // New property for the search query
 
   // Algolia credentials
   algoliaAppId: string = 'UW17LRXEG9';
@@ -91,14 +91,21 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  performSearch() {
+    this.filteredData = this.data.filter(
+      (person) =>
+        person.Name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        person.Studio.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+        person.JobTitle.toLowerCase().includes(this.searchQuery.toLowerCase())
+    );
+  }
+
   logout() {
-    console.log('Logout clicked');
     this.authService.logout();
     this.router.navigate(['/login']);
   }
 
   editContent() {
-    console.log('Navigating to edit content page');
     this.router.navigate(['/edit-content']);
   }
 

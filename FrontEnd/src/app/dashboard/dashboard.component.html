@@ -13,17 +13,22 @@
     </div>
   </div>
 
-  <!-- Algolia search bar -->
-  <app-algolia-react
-    [appId]="algoliaAppId"
-    [apiKey]="algoliaApiKey"
-    [indexName]="algoliaIndexName"
-  ></app-algolia-react>
+  <!-- Simple Search Bar -->
+  <div class="search-container">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      class="search-bar"
+      placeholder="Search for people"
+    />
+    <button (click)="performSearch()" class="search-button">Search</button>
+  </div>
 
   <button (click)="toggleFilters()" class="filter-button">
     {{ showFilters ? "Hide Filters" : "Show Filters" }}
   </button>
 
+  <!-- Filter Sections -->
   <div *ngIf="showFilters" class="content-sections">
     <div class="content-section">
       <h2>Studios</h2>
@@ -78,6 +83,7 @@
     </div>
   </div>
 
+  <!-- People Section -->
   <div class="people-section">
     <h2>People</h2>
     <div *ngIf="filteredData.length === 0" class="no-people-message">
