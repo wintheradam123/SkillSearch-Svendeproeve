@@ -346,19 +346,20 @@ namespace TeamFinderAPI.Controllers
             }
         }
 
-        [HttpGet("LoginUser")]
-        public async Task<IActionResult> LoginUser(string userPrincipalName, string password)
+        [HttpPost("LoginUser")]
+        public async Task<IActionResult> LoginUser(User user)
         {
             try
             {
-                var user = await _context.Users.FirstOrDefaultAsync(x => x.UserPrincipalName == userPrincipalName);
+                var userToLogin =
+                    await _context.Users.FirstOrDefaultAsync(x => x.UserPrincipalName == user.UserPrincipalName);
 
-                if (user == null || user.Password.IsNullOrEmpty())
+                if (userToLogin == null || userToLogin.Password.IsNullOrEmpty())
                 {
                     return NotFound();
                 }
 
-                if (user.Password != password)
+                if (userToLogin.Password != user.Password)
                 {
                     return Unauthorized();
                 }
