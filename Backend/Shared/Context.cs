@@ -29,8 +29,7 @@ namespace Shared
 
         protected override void OnConfiguring(DbContextOptionsBuilder dbContextOptionsBuilder)
         {
-            dbContextOptionsBuilder.UseSqlServer(
-                @"Server=CPH00301;Database=SvendeProve;Integrated Security=True;TrustServerCertificate=True");
+            dbContextOptionsBuilder.UseSqlServer(_connectionString);
             //dbContextOptionsBuilder.UseSqlServer(
             //    @"Server=CPH00301;Database=SkillSearch;Integrated Security=True;TrustServerCertificate=True");
         }
