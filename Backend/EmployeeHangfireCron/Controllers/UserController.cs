@@ -23,7 +23,7 @@ namespace GraphCronJob.Controllers
             return _context.Users.ToList();
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
+        //[ApiExplorerSettings(IgnoreApi = true)]
         public async Task<List<User>> PostUsersAndUpdate(List<User> adUsers, AlgoliaSettings settings)
         {
             var usersToUpdate = new List<User>();
@@ -170,6 +170,53 @@ namespace GraphCronJob.Controllers
                 await AlgoliaHelperUsers.Delete(idsToDelete, settings);
 
                 return Ok(idsToDelete.Count);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Error while deleting users: " + e.Message);
+            }
+        }
+
+        [HttpDelete("DeleteUsers")]
+        public async Task<ActionResult<int>> DeleteUsers()
+        {
+            var userIds = _context.Users.Select(x => x.ExternalId.ToString()).ToList();
+            //Delete all users
+            _context.Users.RemoveRange(_context.Users);
+
+            try
+            {
+                // This code deletes the opposite of all disabled users
+                //    List<string> idsToDelete = new();
+                //    foreach (var user in _context.Users)
+                //    {
+                //        try
+                //        {
+                //            var userAzureId = users.FirstOrDefault(x => x.AzureId == user.AzureId);
+
+                //            if (userAzureId != null) continue;
+
+                //            _context.Users.Remove(user);
+                //            idsToDelete.Add(user.AzureId);
+                //        }
+                //        catch
+                //        {
+                //            //Log it here!
+                //        }
+                //    }
+
+                await _context.SaveChangesAsync();
+
+                if (userIds.Count == 0)
+                {
+                    return NoContent();
+                }
+
+                var algoliaSettings = AlgoliaHelper.LoadAlgoliaSettings();
+
+                await AlgoliaHelperUsers.Delete(userIds, algoliaSettings);
+
+                return Ok(userIds.Count);
             }
             catch (Exception e)
             {

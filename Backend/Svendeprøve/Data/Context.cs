@@ -5,10 +5,17 @@ namespace EmployeeAPI.Data
 {
     public class Context : DbContext
     {
+        private readonly IConfiguration _configuration;
+
+        public Context(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder dbContextOptionsBuilder)
         {
-            dbContextOptionsBuilder.UseSqlServer(
-                @"Server=CPH00301;Database=ExternalEmployeeAPI;Integrated Security=True;TrustServerCertificate=True");
+            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+            dbContextOptionsBuilder.UseSqlServer(connectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Shared;
 using Shared.Helpers;
@@ -158,7 +159,7 @@ namespace TeamFinderAPI.Controllers
         }
 
         [HttpGet("azureId/{id}")]
-        public async Task<ActionResult<User>> GetUserAzureId(int id)
+        public async Task<ActionResult<User>> GetUserExternalId(int id)
         {
             try
             {
@@ -282,6 +283,7 @@ namespace TeamFinderAPI.Controllers
                 return BadRequest("Error occurred while editing user: " + e.Message);
             }
         }
+
         //TODO: Fix these methods
         //[HttpGet("IndexAllUsers")]
         //public async Task<IActionResult> IndexAllUsers()
@@ -306,6 +308,68 @@ namespace TeamFinderAPI.Controllers
 
         //    return Ok();
         //}
+
+        [HttpPost("CreatePassword")]
+        public async Task<IActionResult> CreatePassword(User user)
+        {
+            try
+            {
+                var userToUpdate =
+                    await _context.Users.FirstOrDefaultAsync(x => x.UserPrincipalName == user.UserPrincipalName);
+
+                if (userToUpdate == null)
+                {
+                    return NotFound();
+                }
+
+                if (userToUpdate.Password != null || !userToUpdate.Password.IsNullOrEmpty())
+                {
+                    return BadRequest("Password already exists for user");
+                }
+
+                //Checks password for security
+                if (user.Password.Length < 8)
+                {
+                    return BadRequest("Password must be at least 8 characters long");
+                }
+
+                userToUpdate.Password = user.Password;
+
+                _context.Update(userToUpdate);
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Error occurred while creating password: " + e.Message);
+            }
+        }
+
+        [HttpGet("LoginUser")]
+        public async Task<IActionResult> LoginUser(string userPrincipalName, string password)
+        {
+            try
+            {
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.UserPrincipalName == userPrincipalName);
+
+                if (user == null || user.Password.IsNullOrEmpty())
+                {
+                    return NotFound();
+                }
+
+                if (user.Password != password)
+                {
+                    return Unauthorized();
+                }
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Error occurred while logging in user: " + e.Message);
+            }
+        }
 
         private bool UserExists(int id)
         {
