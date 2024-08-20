@@ -25,7 +25,7 @@ builder.Services.AddHangfireServer();
 
 
 var app = builder.Build();
-
+ 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -39,7 +39,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHangfireDashboard();
 
-RecurringJob.AddOrUpdate<CronJobs>("Get users and pictures", x => x.RunTask(), "0 5 * * 1-5");
+RecurringJob.AddOrUpdate<CronJobs>("Get users and pictures", x => x.RunTask(), "0 5 * * 1-5"); 
 
 
 app.UseHttpsRedirection();

@@ -22,7 +22,7 @@ namespace Shared.Models
         public List<Solution>? Solutions { get; set; }
 
         public string Role { get; set; }
-        [EncryptColumn] public string Password { get; set; }
+        [EncryptColumn] public string? Password { get; set; }
 
         //public byte[]? ImageData { get; set; }
 
