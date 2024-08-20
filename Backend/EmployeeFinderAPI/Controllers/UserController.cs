@@ -14,6 +14,7 @@ namespace TeamFinderAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigin")] // Apply CORS policy
     public class UserController : ControllerBase
     {
         /// <summary>
