@@ -1,4 +1,5 @@
 using Shared;
+using SkillSearchAPI.Controllers;
 using TeamFinderAPI.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<Context>();
 builder.Services.AddScoped<UserController>();
+builder.Services.AddScoped<SkillController>();
 
 
 var app = builder.Build();
