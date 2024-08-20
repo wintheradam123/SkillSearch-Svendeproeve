@@ -1,6 +1,6 @@
 <div class="dashboard-container">
   <div class="header">
-    <h1>Dashboard</h1>
+    <h1>Skillsearch</h1>
     <div class="top-right-buttons">
       <button
         *ngIf="role === 'admin' || role === 'user'"
@@ -70,7 +70,7 @@
     </div>
 
     <div class="content-section">
-      <h2>Expertise</h2>
+      <h2>Skills</h2>
       <ul>
         <li
           *ngFor="let expertise of uniqueExpertise"
@@ -91,7 +91,6 @@
     </div>
     <div *ngFor="let person of filteredData" class="person-card">
       <p><strong>Name:</strong> {{ person.Name }}</p>
-      <p><strong>Age:</strong> {{ person.Age }}</p>
       <p><strong>Studio:</strong> {{ person.Studio }}</p>
       <p><strong>Job title:</strong> {{ person.JobTitle }}</p>
       <p><strong>Projects:</strong> {{ person.Projects.join(", ") }}</p>

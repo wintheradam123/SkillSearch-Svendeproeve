@@ -110,6 +110,8 @@ h1 {
 .content-section ul {
   list-style: none;
   padding: 0;
+  max-height: 200px; /* Set a max height for the list */
+  overflow-y: auto; /* Enable scrolling when content overflows */
 }
 
 .content-section ul ul {
@@ -166,4 +168,19 @@ p {
 }
 app-algolia-react {
   border: 2px solid red; /* Temporary border to see where the component is */
+}
+
+/* Custom scrollbar styling */
+.content-section ul::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-section ul::-webkit-scrollbar-track {
+  background: #333;
+}
+
+.content-section ul::-webkit-scrollbar-thumb {
+  background-color: #555;
+  border-radius: 10px;
+  border: 2px solid #333;
 }
