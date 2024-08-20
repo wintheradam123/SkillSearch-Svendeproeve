@@ -51,6 +51,7 @@ namespace TeamFinderAPI.Controllers
                         Skills = u.Skills,
                         Solutions = u.Solutions,
                         UserPrincipalName = u.UserPrincipalName,
+                        Role = u.Role,
                         //ImageSize = u.ImageSize,
                         //ImageData = null
                     })
@@ -91,6 +92,7 @@ namespace TeamFinderAPI.Controllers
                         Skills = u.Skills,
                         Solutions = u.Solutions,
                         UserPrincipalName = u.UserPrincipalName,
+                        Role = u.Role,
                         //ImageSize = u.ImageSize,
                         //ImageData = null
                     })
