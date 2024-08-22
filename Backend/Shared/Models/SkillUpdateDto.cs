@@ -11,6 +11,6 @@ namespace Shared.Models
         public int Id { get; set; }
 
         //public string Tag { get; set; }
-        public string UserId { get; set; }
+        public int UserId { get; set; }
     }
 }
