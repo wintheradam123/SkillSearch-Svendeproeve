@@ -3,7 +3,7 @@
     <h1>Edit Content</h1>
   </div>
 
-  <div *ngIf="role === 'admin'" class="admin-section">
+  <div *ngIf="role === 'Admin'" class="admin-section">
     <div class="input-container">
       <input
         #newProject
@@ -35,7 +35,7 @@
     </div>
   </div>
 
-  <div *ngIf="role === 'user' || role === 'admin'" class="selection-section">
+  <div *ngIf="role === 'User' || role === 'Admin'" class="selection-section">
     <h3>Select Projects:</h3>
     <div *ngFor="let project of projects" class="checkbox-container">
       <input
