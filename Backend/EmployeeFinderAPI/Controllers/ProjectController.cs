@@ -141,7 +141,6 @@ namespace SkillSearchAPI.Controllers
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    // Use logwriter
                 }
 
                 return NoContent();
@@ -185,6 +184,11 @@ namespace SkillSearchAPI.Controllers
             // Retrieve the user with the specified ID
             var user = await _context.Users /*.Include(u => u.Skills)*/
                 .FirstOrDefaultAsync(x => x.Id == solutionUpdateDto.UserId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
 
             switch (subscribe)
             {
