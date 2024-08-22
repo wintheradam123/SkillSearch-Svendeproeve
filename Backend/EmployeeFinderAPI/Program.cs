@@ -4,6 +4,7 @@ using SkillSearchAPI.Controllers;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+const string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -11,10 +12,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin",
-        builder =>
+    options.AddPolicy(name: myAllowSpecificOrigins,
+        corsPolicyBuilder =>
         {
-            builder.WithOrigins("http://localhost:4200", "https://localhost:4200", "localhost:4200",
+            corsPolicyBuilder.WithOrigins("http://localhost:4200", "https://localhost:4200", "localhost:4200",
                     "http://localhost:7208", "https://localhost:7208")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
@@ -44,6 +45,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors();
+app.UseCors(myAllowSpecificOrigins);
 
 app.Run();
