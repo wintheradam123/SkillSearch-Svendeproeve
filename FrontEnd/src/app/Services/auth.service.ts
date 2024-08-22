@@ -12,17 +12,14 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  /**
-   * Login method that sends a POST request to the API.
-   * @param email User email
-   * @param password User password
-   * @returns Observable<boolean> indicating success or failure
+  /*
+   Login method that sends a POST request to the API.
    */
   login(email: string, password: string): Observable<boolean> {
     return this.http.post<any>(this.apiUrl, { email, password }).pipe(
       tap((response) => {
         if (response && response.role) {
-          this.currentUser = { ...response }; // Store user info including role
+          this.currentUser = { ...response }; // Store user info
           localStorage.setItem('userRole', this.currentUser.role);
           localStorage.setItem('isLoggedIn', 'true');
         }
@@ -40,17 +37,12 @@ export class AuthService {
     localStorage.removeItem('isLoggedIn');
   }
 
-  /**
-   * Get the current logged-in user.
-   * @returns The current user object or null
-   */
+  /* Get the current logged-in user. */
   getCurrentUserValue() {
     return this.currentUser;
   }
-
-  /**
+  /*
    * Get the role of the current user.
-   * @returns The role of the user or null
    */
   getUserRole(): string | null {
     return this.currentUser
@@ -63,10 +55,6 @@ export class AuthService {
     }
   }
 
-  /**
-   * Update the user's expertise.
-   * @param expertise Updated list of expertise
-   */
   updateCurrentUserExpertise(expertise: string[]) {
     if (this.currentUser) {
       this.currentUser.Expertise = expertise;
