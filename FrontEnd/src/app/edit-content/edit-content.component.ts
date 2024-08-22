@@ -32,14 +32,14 @@ export class EditContentComponent implements OnInit {
   }
 
   addProject(project: string) {
-    if (this.role === 'admin') {
+    if (this.role === 'Admin') {
       this.dataService.addProject(project);
       this.projects = this.dataService.getProjects(); // Update the list
     }
   }
 
   addExpertise(expertiseItem: string) {
-    if (this.role === 'admin') {
+    if (this.role === 'Admin') {
       this.dataService.addExpertise(expertiseItem);
       this.expertise = this.dataService.getExpertise(); // Update the list
     }
