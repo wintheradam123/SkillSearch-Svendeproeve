@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../Services/auth.service';
 import { DataService } from '../Services/data-service.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-edit-content',
@@ -14,9 +15,12 @@ export class EditContentComponent implements OnInit {
   selectedProjects: string[] = [];
   selectedExpertise: string[] = [];
 
+  private readonly apiUrl = 'https://localhost:7208/api/Skill';
+
   constructor(
     private authService: AuthService,
-    private dataService: DataService
+    private dataService: DataService,
+    private http: HttpClient // Inject HttpClient to make HTTP requests
   ) {}
 
   ngOnInit() {
@@ -33,8 +37,23 @@ export class EditContentComponent implements OnInit {
 
   addProject(project: string) {
     if (this.role === 'Admin') {
-      this.dataService.addProject(project);
-      this.projects = this.dataService.getProjects(); // Update the list
+      const newProject = {
+        id: 0, // ID will be auto-incremented by the backend
+        title: project,
+        category: null, // Optional, can be null
+        users: [], // Initially empty
+      };
+
+      this.http.post(this.apiUrl, newProject).subscribe(
+        (response: any) => {
+          console.log('Project added successfully:', response);
+          // Add the new project to the local list and update the UI
+          this.projects.push(response.title);
+        },
+        (error) => {
+          console.error('Error adding project:', error);
+        }
+      );
     }
   }
 
