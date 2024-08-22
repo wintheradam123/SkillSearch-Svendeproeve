@@ -28,18 +28,22 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    const loginSuccessful = this.authService.login(
-      this.username,
-      this.password
+    this.authService.login(this.username, this.password).subscribe(
+      (isLoggedIn: boolean) => {
+        if (isLoggedIn) {
+          const userRole = this.authService.getUserRole();
+          console.log(
+            `Login successful as ${userRole}, navigating to dashboard`
+          );
+          this.router.navigate(['/dashboard']); // Navigate to dashboard after login
+        } else {
+          this.errorMessage = 'Invalid username or password';
+        }
+      },
+      (error) => {
+        console.error('Login failed', error);
+        this.errorMessage = 'An error occurred during login. Please try again.';
+      }
     );
-
-    if (loginSuccessful) {
-      const userRole = this.authService.getUserRole();
-      console.log(`Login successful as ${userRole}, navigating to dashboard`);
-      this.router.navigate(['/dashboard']); // Navigate to dashboard after login
-    } else {
-      console.error('Login failed');
-      this.errorMessage = 'Invalid username or password';
-    }
   }
 }

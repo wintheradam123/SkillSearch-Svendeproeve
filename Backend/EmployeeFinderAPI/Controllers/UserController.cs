@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Shared;
 using Shared.Models;
+using SkillSearchAPI.Models;
 
 namespace SkillSearchAPI.Controllers
 {
@@ -308,12 +309,12 @@ namespace SkillSearchAPI.Controllers
         //}
 
         [HttpPost("CreatePassword")]
-        public async Task<IActionResult> CreatePassword(User user)
+        public async Task<IActionResult> CreatePassword(LoginUserRequest user)
         {
             try
             {
                 var userToUpdate =
-                    await _context.Users.FirstOrDefaultAsync(x => x.UserPrincipalName == user.UserPrincipalName);
+                    await _context.Users.FirstOrDefaultAsync(x => x.UserPrincipalName == user.Email);
 
                 if (userToUpdate == null)
                 {
@@ -345,12 +346,12 @@ namespace SkillSearchAPI.Controllers
         }
 
         [HttpPost("LoginUser")]
-        public async Task<IActionResult> LoginUser(User user)
+        public async Task<IActionResult> LoginUser(LoginUserRequest user)
         {
             try
             {
                 var userToLogin =
-                    await _context.Users.FirstOrDefaultAsync(x => x.UserPrincipalName == user.UserPrincipalName);
+                    await _context.Users.FirstOrDefaultAsync(x => x.UserPrincipalName == user.Email);
 
                 if (userToLogin == null || userToLogin.Password.IsNullOrEmpty())
                 {

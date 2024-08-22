@@ -1,13 +1,14 @@
 <div class="login-container">
-  <form (submit)="login(); $event.preventDefault()">
-    <h2>Login</h2>
+  <form (submit)="createUser(); $event.preventDefault()">
+    <h2>Create User</h2>
     <div class="input-container">
       <input
         type="text"
-        [(ngModel)]="username"
+        [(ngModel)]="email"
         placeholder="Email"
-        name="username"
+        name="email"
         class="input-box"
+        required
       />
     </div>
     <div class="input-container">
@@ -17,12 +18,11 @@
         placeholder="Password"
         name="password"
         class="input-box"
+        required
       />
     </div>
-    <button type="submit" class="login-button">Login</button>
-    <button type="button" class="create-button" [routerLink]="['/create-user']">
-      Create User
-    </button>
+    <button type="submit" class="login-button">Create User</button>
   </form>
   <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+  <p *ngIf="successMessage" class="success-message">{{ successMessage }}</p>
 </div>

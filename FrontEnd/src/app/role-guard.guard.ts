@@ -14,8 +14,11 @@ export class RoleGuard implements CanActivate {
     console.log('RoleGuard - Current User:', currentUser); // Debugging log
 
     if (currentUser) {
+      // Normalize the role to lowercase
+      const normalizedRole = currentUser.role.toLowerCase();
+
       // User is logged in
-      if (currentUser.role === 'admin' || currentUser.role === 'user') {
+      if (normalizedRole === 'admin' || normalizedRole === 'user') {
         // User has a valid role
         return true;
       } else {
