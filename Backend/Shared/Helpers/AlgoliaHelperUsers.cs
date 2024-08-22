@@ -44,13 +44,13 @@ namespace Shared.Helpers
                 Solutions = user.Solutions?.Select(solution => new AlgoliaSolution()
                 {
                     SolutionName = solution.Title
-                }).ToList(),
+                }).ToList() ?? new List<AlgoliaSolution>(),
                 JobTitle = user.JobTitle,
                 OfficeLocation = user.OfficeLocation,
                 Skills = user.Skills?.Select(skill => new AlgoliaSkill
                 {
                     Tag = skill.Title
-                }).ToList(),
+                }).ToList() ?? new List<AlgoliaSkill>(),
                 UserPrincipalName = user.UserPrincipalName,
                 //HasImage = user.ImageSize != null && user.ImageSize != 0,
                 Role = user.Role
