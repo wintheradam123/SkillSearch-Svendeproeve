@@ -1,6 +1,5 @@
 using Shared;
 using SkillSearchAPI.Controllers;
-using TeamFinderAPI.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
