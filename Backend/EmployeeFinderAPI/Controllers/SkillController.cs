@@ -260,6 +260,56 @@ namespace SkillSearchAPI.Controllers
             return Ok(skill);
         }
 
+        [HttpPut("UpdateUserSkills")]
+        public async Task<IActionResult> UpdateUserSkills(List<SkillUpdateDto> skillUpdateDtos)
+        {
+            if (skillUpdateDtos == null || !skillUpdateDtos.Any())
+            {
+                return BadRequest("SkillUpdateDtos is null or empty");
+            }
+
+            foreach (var skillUpdateDto in skillUpdateDtos)
+            {
+                var skill = await _context.Skills.Include(s => s.Users)
+                    .FirstOrDefaultAsync(s => s.Id == skillUpdateDto.Id);
+
+                if (skill == null)
+                {
+                    return NotFound();
+                }
+
+                var user = await _context.Users.Include(u => u.Skills)
+                    .FirstOrDefaultAsync(u => u.Id == skillUpdateDto.UserId);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                if (skill.Users.Contains(user))
+                {
+                    skill.Users.Remove(user);
+                }
+                else
+                {
+                    skill.Users.Add(user);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            var users = await _context.Users
+                .Include(u => u.Skills)
+                .Include(u => u.Solutions)
+                .ToListAsync();
+
+            var algUsers = AlgoliaHelperUsers.TransformToAlgolia(users);
+            await AlgoliaHelperUsers.PartialUpdate(algUsers, _algoliaSettingsUsers);
+
+            return Ok();
+        }
+
+
         // POST: api/Skill
         // To protect from overposting attacks, enable the specific properties you want to bind to, for
         // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
