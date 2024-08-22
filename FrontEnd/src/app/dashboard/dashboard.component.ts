@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../Services/auth.service';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http'; // Import HttpClient
 import algoliasearch from 'algoliasearch/lite';
 
 interface AlgoliaHit {
@@ -43,7 +44,13 @@ export class DashboardComponent implements OnInit {
   private algoliaClient: any;
   private algoliaIndex: any;
 
-  constructor(private authService: AuthService, private router: Router) {
+  private readonly skillApiUrl = 'https://localhost:7208/api/Skill'; // API URL for skills
+
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private http: HttpClient // Inject HttpClient
+  ) {
     this.algoliaClient = algoliasearch(this.algoliaAppId, this.algoliaApiKey);
     this.algoliaIndex = this.algoliaClient.initIndex(this.algoliaIndexName);
   }
@@ -106,7 +113,16 @@ export class DashboardComponent implements OnInit {
   }
 
   editContent() {
-    this.router.navigate(['/edit-content']);
+    // Call the API before navigating to the Edit Content page
+    this.http.get(this.skillApiUrl).subscribe(
+      (response: any) => {
+        console.log('Skills fetched successfully:', response);
+        this.router.navigate(['/edit-content']); // Navigate after API call
+      },
+      (error) => {
+        console.error('Error fetching skills:', error);
+      }
+    );
   }
 
   toggleFilters() {

@@ -6,16 +6,16 @@
   <div *ngIf="role === 'Admin'" class="admin-section">
     <div class="input-container">
       <input
-        #newProject
+        #newSkill
         type="text"
         class="input-field"
-        placeholder="New Project"
+        placeholder="New Skill"
       />
       <button
-        (click)="addProject(newProject.value); newProject.value = ''"
+        (click)="addSkill(newSkill.value); newSkill.value = ''"
         class="action-button"
       >
-        Add Project
+        Add Skill
       </button>
     </div>
 
@@ -36,19 +36,19 @@
   </div>
 
   <div *ngIf="role === 'User' || role === 'Admin'" class="selection-section">
-    <h3>Select Projects:</h3>
-    <div *ngFor="let project of projects" class="checkbox-container">
+    <h3>Select Skills:</h3>
+    <div *ngFor="let skill of skills" class="checkbox-container">
       <input
         type="checkbox"
-        [id]="project"
-        [value]="project"
-        (change)="toggleProjectSelection(project)"
-        [checked]="selectedProjects.includes(project)"
+        [id]="skill.title"
+        [value]="skill.title"
+        (change)="toggleSkillSelection(skill)"
+        [checked]="selectedSkills.includes(skill.title)"
       />
-      <label [for]="project">{{ project }}</label>
+      <label [for]="skill.title">{{ skill.title }}</label>
     </div>
 
-    <h3>Select Skills:</h3>
+    <h3>Select Expertise:</h3>
     <div *ngFor="let expertiseItem of expertise" class="checkbox-container">
       <input
         type="checkbox"

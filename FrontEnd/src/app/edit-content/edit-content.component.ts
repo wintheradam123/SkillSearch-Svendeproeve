@@ -10,10 +10,11 @@ import { HttpClient } from '@angular/common/http';
 })
 export class EditContentComponent implements OnInit {
   role: string = '';
-  projects: string[] = [];
+  skills: any[] = []; // Updated to store objects with skill details
   expertise: string[] = [];
-  selectedProjects: string[] = [];
+  selectedSkills: string[] = [];
   selectedExpertise: string[] = [];
+  userId: number | null = null; // Store the user ID
 
   private readonly apiUrl = 'https://localhost:7208/api/Skill';
 
@@ -27,31 +28,53 @@ export class EditContentComponent implements OnInit {
     const currentUser = this.authService.getCurrentUserValue();
     if (currentUser) {
       this.role = currentUser.role;
-      this.selectedProjects = currentUser.Projects || [];
+      this.userId = currentUser.id; // Retrieve the user ID from the logged-in user
+      this.selectedSkills = currentUser.Projects || []; // Now "Projects" becomes "Skills"
       this.selectedExpertise = currentUser.Expertise || [];
     }
 
-    this.projects = this.dataService.getProjects();
+    // Fetch skills from the API and populate the skills array
+    this.http.get<any[]>(this.apiUrl).subscribe(
+      (response) => {
+        this.skills = response; // Use the API response to set the skills
+        console.log('Skills loaded:', this.skills);
+      },
+      (error) => {
+        console.error('Error fetching skills:', error);
+      }
+    );
+
     this.expertise = this.dataService.getExpertise();
   }
 
-  addProject(project: string) {
+  addSkill(skill: string) {
     if (this.role === 'Admin') {
-      const newProject = {
+      // Create the skill payload
+      const newSkill = {
         id: 0, // ID will be auto-incremented by the backend
-        title: project,
-        category: null, // Optional, can be null
-        users: [], // Initially empty
+        title: skill.trim(), // Ensure that the title is not empty or just whitespace
+        category: 'string', // Placeholder value for category, adjust as needed
+        users: [], // Initially an empty array
       };
 
-      this.http.post(this.apiUrl, newProject).subscribe(
+      // Log the payload for debugging
+      console.log('Sending skill payload:', newSkill);
+
+      // Send the POST request
+      this.http.post(this.apiUrl, newSkill).subscribe(
         (response: any) => {
-          console.log('Project added successfully:', response);
-          // Add the new project to the local list and update the UI
-          this.projects.push(response.title);
+          console.log('Skill added successfully:', response);
+          // Add the new skill to the local list and update the UI
+          this.skills.push(response);
         },
         (error) => {
-          console.error('Error adding project:', error);
+          // Log the error response for debugging
+          console.error('Error adding skill:', error);
+          if (error.status === 400) {
+            console.error(
+              'Bad Request - Check if all required fields are correct.'
+            );
+          }
         }
       );
     }
@@ -64,15 +87,18 @@ export class EditContentComponent implements OnInit {
     }
   }
 
-  toggleProjectSelection(project: string) {
-    if (this.selectedProjects.includes(project)) {
-      this.selectedProjects = this.selectedProjects.filter(
-        (p) => p !== project
+  toggleSkillSelection(skill: any) {
+    const skillId = skill.id; // Access the skill ID from the skill object
+    if (this.selectedSkills.includes(skill.title)) {
+      this.selectedSkills = this.selectedSkills.filter(
+        (s) => s !== skill.title
       );
+      this.subscribeOrUnsubscribe(skillId, 'unsubscribe'); // Call API to unsubscribe
     } else {
-      this.selectedProjects.push(project);
+      this.selectedSkills.push(skill.title);
+      this.subscribeOrUnsubscribe(skillId, 'subscribe'); // Call API to subscribe
     }
-    this.authService.updateCurrentUserProjects(this.selectedProjects);
+    this.authService.updateCurrentUserProjects(this.selectedSkills); // Here "Projects" are actually skills
   }
 
   toggleExpertiseSelection(expertiseItem: string) {
@@ -84,5 +110,26 @@ export class EditContentComponent implements OnInit {
       this.selectedExpertise.push(expertiseItem);
     }
     this.authService.updateCurrentUserExpertise(this.selectedExpertise);
+  }
+
+  subscribeOrUnsubscribe(skillId: number, action: 'subscribe' | 'unsubscribe') {
+    if (this.userId !== null) {
+      const url = `${this.apiUrl}/Subscribe/${skillId}?subscribe=${action}`;
+
+      // Send both skillId and userId in the request body
+      const skillUpdateDto = {
+        Id: skillId,
+        UserId: this.userId,
+      };
+
+      this.http.put(url, skillUpdateDto).subscribe(
+        (response: any) => {
+          console.log(`Skill ${action}d successfully:`, response);
+        },
+        (error) => {
+          console.error(`Error during ${action} operation:`, error);
+        }
+      );
+    }
   }
 }
