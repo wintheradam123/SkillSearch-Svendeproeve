@@ -21,16 +21,16 @@
 
     <div class="input-container">
       <input
-        #newExpertise
+        #newProject
         type="text"
         class="input-field"
-        placeholder="New Expertise"
+        placeholder="New Project"
       />
       <button
-        (click)="addExpertise(newExpertise.value); newExpertise.value = ''"
+        (click)="addProject(newProject.value); newProject.value = ''"
         class="action-button"
       >
-        Add Expertise
+        Add Project
       </button>
     </div>
   </div>
@@ -48,16 +48,16 @@
       <label [for]="skill.title">{{ skill.title }}</label>
     </div>
 
-    <h3>Select Expertise:</h3>
-    <div *ngFor="let expertiseItem of expertise" class="checkbox-container">
+    <h3>Select Projects:</h3>
+    <div *ngFor="let project of projects" class="checkbox-container">
       <input
         type="checkbox"
-        [id]="expertiseItem"
-        [value]="expertiseItem"
-        (change)="toggleExpertiseSelection(expertiseItem)"
-        [checked]="selectedExpertise.includes(expertiseItem)"
+        [id]="project.title"
+        [value]="project.title"
+        (change)="toggleProjectSelection(project)"
+        [checked]="selectedProjects.includes(project.title)"
       />
-      <label [for]="expertiseItem">{{ expertiseItem }}</label>
+      <label [for]="project.title">{{ project.title }}</label>
     </div>
   </div>
 </div>

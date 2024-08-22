@@ -24,13 +24,13 @@ export class DashboardComponent implements OnInit {
   uniqueStudios: string[] = [];
   uniqueJobTitles: string[] = [];
   uniqueProjects: string[] = [];
-  uniqueExpertise: string[] = [];
+  uniqueSkills: string[] = [];
   filteredData: any[] = [];
   selectedFilters: any = {
     Studio: new Set<string>(),
     JobTitle: new Set<string>(),
     Projects: new Set<string>(),
-    Expertise: new Set<string>(),
+    Skills: new Set<string>(),
   };
 
   showFilters: boolean = false;
@@ -45,6 +45,7 @@ export class DashboardComponent implements OnInit {
   private algoliaIndex: any;
 
   private readonly skillApiUrl = 'https://localhost:7208/api/Skill'; // API URL for skills
+  private readonly projectApiUrl = 'https://localhost:7208/api/Project'; // API URL for projects
 
   constructor(
     private authService: AuthService,
@@ -63,6 +64,7 @@ export class DashboardComponent implements OnInit {
     }
 
     this.fetchAlgoliaData(); // Fetch data from Algolia
+    this.fetchSkillsAndProjects(); // Fetch skills and projects
   }
 
   fetchAlgoliaData() {
@@ -77,7 +79,7 @@ export class DashboardComponent implements OnInit {
         JobTitle: hit.jobTitle,
         Role: hit.role,
         Projects: [], // Placeholder if Projects data is not in Algolia
-        Expertise: [], // Placeholder if Expertise data is not in Algolia
+        Skills: [], // Placeholder if Skills data is not in Algolia
       }));
 
       this.filteredData = this.data;
@@ -89,13 +91,31 @@ export class DashboardComponent implements OnInit {
       this.uniqueJobTitles = [
         ...new Set(this.data.map((person) => person.JobTitle)),
       ];
-      this.uniqueProjects = [
-        ...new Set(this.data.flatMap((person) => person.Projects)),
-      ];
-      this.uniqueExpertise = [
-        ...new Set(this.data.flatMap((person) => person.Expertise)),
-      ];
     });
+  }
+
+  fetchSkillsAndProjects() {
+    // Fetch skills from the API
+    this.http.get<any[]>(this.skillApiUrl).subscribe(
+      (skills) => {
+        this.uniqueSkills = skills.map((skill) => skill.title);
+        console.log('Skills loaded:', this.uniqueSkills);
+      },
+      (error) => {
+        console.error('Error fetching skills:', error);
+      }
+    );
+
+    // Fetch projects from the API
+    this.http.get<any[]>(this.projectApiUrl).subscribe(
+      (projects) => {
+        this.uniqueProjects = projects.map((project) => project.title);
+        console.log('Projects loaded:', this.uniqueProjects);
+      },
+      (error) => {
+        console.error('Error fetching projects:', error);
+      }
+    );
   }
 
   performSearch() {
@@ -151,12 +171,12 @@ export class DashboardComponent implements OnInit {
         person.Projects.some((project: string) =>
           this.selectedFilters.Projects.has(project)
         );
-      const expertiseMatch =
-        !this.selectedFilters.Expertise.size ||
-        person.Expertise.some((expertise: string) =>
-          this.selectedFilters.Expertise.has(expertise)
+      const skillMatch =
+        !this.selectedFilters.Skills.size ||
+        person.Skills.some((skill: string) =>
+          this.selectedFilters.Skills.has(skill)
         );
-      return studioMatch && jobTitleMatch && projectMatch && expertiseMatch;
+      return studioMatch && jobTitleMatch && projectMatch && skillMatch;
     });
   }
 }

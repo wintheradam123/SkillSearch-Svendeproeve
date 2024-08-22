@@ -11,12 +11,13 @@ import { HttpClient } from '@angular/common/http';
 export class EditContentComponent implements OnInit {
   role: string = '';
   skills: any[] = []; // Updated to store objects with skill details
-  expertise: string[] = [];
+  projects: any[] = []; // Updated to store objects with project details
   selectedSkills: string[] = [];
-  selectedExpertise: string[] = [];
+  selectedProjects: string[] = [];
   userId: number | null = null; // Store the user ID
 
-  private readonly apiUrl = 'https://localhost:7208/api/Skill';
+  private readonly skillsApiUrl = 'https://localhost:7208/api/Skill';
+  private readonly projectsApiUrl = 'https://localhost:7208/api/Project';
 
   constructor(
     private authService: AuthService,
@@ -30,11 +31,11 @@ export class EditContentComponent implements OnInit {
       this.role = currentUser.role;
       this.userId = currentUser.id; // Retrieve the user ID from the logged-in user
       this.selectedSkills = currentUser.Projects || []; // Now "Projects" becomes "Skills"
-      this.selectedExpertise = currentUser.Expertise || [];
+      this.selectedProjects = currentUser.Expertise || []; // Expertise now refers to Projects
     }
 
     // Fetch skills from the API and populate the skills array
-    this.http.get<any[]>(this.apiUrl).subscribe(
+    this.http.get<any[]>(this.skillsApiUrl).subscribe(
       (response) => {
         this.skills = response; // Use the API response to set the skills
         console.log('Skills loaded:', this.skills);
@@ -44,7 +45,16 @@ export class EditContentComponent implements OnInit {
       }
     );
 
-    this.expertise = this.dataService.getExpertise();
+    // Fetch projects from the API and populate the projects array
+    this.http.get<any[]>(this.projectsApiUrl).subscribe(
+      (response) => {
+        this.projects = response; // Use the API response to set the projects
+        console.log('Projects loaded:', this.projects);
+      },
+      (error) => {
+        console.error('Error fetching projects:', error);
+      }
+    );
   }
 
   addSkill(skill: string) {
@@ -61,7 +71,7 @@ export class EditContentComponent implements OnInit {
       console.log('Sending skill payload:', newSkill);
 
       // Send the POST request
-      this.http.post(this.apiUrl, newSkill).subscribe(
+      this.http.post(this.skillsApiUrl, newSkill).subscribe(
         (response: any) => {
           console.log('Skill added successfully:', response);
           // Add the new skill to the local list and update the UI
@@ -80,10 +90,36 @@ export class EditContentComponent implements OnInit {
     }
   }
 
-  addExpertise(expertiseItem: string) {
+  addProject(project: string) {
     if (this.role === 'Admin') {
-      this.dataService.addExpertise(expertiseItem);
-      this.expertise = this.dataService.getExpertise(); // Update the list
+      // Create the project payload
+      const newProject = {
+        id: 0, // ID will be auto-incremented by the backend
+        title: project.trim(), // Ensure that the title is not empty or just whitespace
+        category: 'string', // Placeholder value for category, adjust as needed
+        users: [], // Initially an empty array
+      };
+
+      // Log the payload for debugging
+      console.log('Sending project payload:', newProject);
+
+      // Send the POST request
+      this.http.post(this.projectsApiUrl, newProject).subscribe(
+        (response: any) => {
+          console.log('Project added successfully:', response);
+          // Add the new project to the local list and update the UI
+          this.projects.push(response);
+        },
+        (error) => {
+          // Log the error response for debugging
+          console.error('Error adding project:', error);
+          if (error.status === 400) {
+            console.error(
+              'Bad Request - Check if all required fields are correct.'
+            );
+          }
+        }
+      );
     }
   }
 
@@ -93,38 +129,46 @@ export class EditContentComponent implements OnInit {
       this.selectedSkills = this.selectedSkills.filter(
         (s) => s !== skill.title
       );
-      this.subscribeOrUnsubscribe(skillId, 'unsubscribe'); // Call API to unsubscribe
+      this.subscribeOrUnsubscribe(skillId, 'unsubscribe', 'Skill'); // Call API to unsubscribe
     } else {
       this.selectedSkills.push(skill.title);
-      this.subscribeOrUnsubscribe(skillId, 'subscribe'); // Call API to subscribe
+      this.subscribeOrUnsubscribe(skillId, 'subscribe', 'Skill'); // Call API to subscribe
     }
     this.authService.updateCurrentUserProjects(this.selectedSkills); // Here "Projects" are actually skills
   }
 
-  toggleExpertiseSelection(expertiseItem: string) {
-    if (this.selectedExpertise.includes(expertiseItem)) {
-      this.selectedExpertise = this.selectedExpertise.filter(
-        (e) => e !== expertiseItem
+  toggleProjectSelection(project: any) {
+    const projectId = project.id; // Access the project ID from the project object
+    if (this.selectedProjects.includes(project.title)) {
+      this.selectedProjects = this.selectedProjects.filter(
+        (p) => p !== project.title
       );
+      this.subscribeOrUnsubscribe(projectId, 'unsubscribe', 'Project'); // Call API to unsubscribe
     } else {
-      this.selectedExpertise.push(expertiseItem);
+      this.selectedProjects.push(project.title);
+      this.subscribeOrUnsubscribe(projectId, 'subscribe', 'Project'); // Call API to subscribe
     }
-    this.authService.updateCurrentUserExpertise(this.selectedExpertise);
+    this.authService.updateCurrentUserExpertise(this.selectedProjects); // Here "Expertise" are actually projects
   }
 
-  subscribeOrUnsubscribe(skillId: number, action: 'subscribe' | 'unsubscribe') {
+  subscribeOrUnsubscribe(
+    itemId: number,
+    action: 'subscribe' | 'unsubscribe',
+    type: 'Skill' | 'Project'
+  ) {
+    const apiUrl = type === 'Skill' ? this.skillsApiUrl : this.projectsApiUrl;
     if (this.userId !== null) {
-      const url = `${this.apiUrl}/Subscribe/${skillId}?subscribe=${action}`;
+      const url = `${apiUrl}/Subscribe/${itemId}?subscribe=${action}`;
 
-      // Send both skillId and userId in the request body
-      const skillUpdateDto = {
-        Id: skillId,
+      // Send both itemId (skillId/projectId) and userId in the request body
+      const updateDto = {
+        Id: itemId,
         UserId: this.userId,
       };
 
-      this.http.put(url, skillUpdateDto).subscribe(
+      this.http.put(url, updateDto).subscribe(
         (response: any) => {
-          console.log(`Skill ${action}d successfully:`, response);
+          console.log(`${type} ${action}d successfully:`, response);
         },
         (error) => {
           console.error(`Error during ${action} operation:`, error);
