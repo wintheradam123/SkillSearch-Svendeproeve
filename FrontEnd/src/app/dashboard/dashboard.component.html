@@ -91,10 +91,11 @@
     </div>
     <div *ngFor="let person of filteredData" class="person-card">
       <p><strong>Name:</strong> {{ person.Name }}</p>
+      <p><strong>Email:</strong> {{ person.userPrincipalName }}</p>
       <p><strong>Studio:</strong> {{ person.Studio }}</p>
       <p><strong>Job title:</strong> {{ person.JobTitle }}</p>
-      <p><strong>Projects:</strong> {{ person.Projects.join(", ") }}</p>
-      <p><strong>Skills:</strong> {{ person.Skills.join(", ") }}</p>
+      <p><strong>Projects:</strong> {{ person.Projects.length > 0 ? person.Projects.join(", ") : 'No Projects' }}</p>
+      <p><strong>Skills:</strong> {{ person.Skills.length > 0 ? person.Skills.join(", ") : 'No Skills' }}</p>
     </div>
   </div>
 </div>

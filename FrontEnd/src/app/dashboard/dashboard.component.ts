@@ -68,18 +68,21 @@ export class DashboardComponent implements OnInit {
   }
 
   fetchAlgoliaData() {
-    this.algoliaIndex.search('').then((response: { hits: AlgoliaHit[] }) => {
+    this.algoliaIndex.search('').then((response: { hits: any[] }) => {
       const hits = response.hits;
       console.log('Algolia response hits:', hits);
 
       // Map the Algolia fields to your expected structure
       this.data = hits.map((hit) => ({
         Name: hit.displayName,
+        userPrincipalName: hit.userPrincipalName,
         Studio: hit.officeLocation,
         JobTitle: hit.jobTitle,
         Role: hit.role,
-        Projects: [], // Placeholder if Projects data is not in Algolia
-        Skills: [], // Placeholder if Skills data is not in Algolia
+        Projects: hit.solutions
+          ? hit.solutions.map((solution: any) => solution.solutionName)
+          : [], // Map 'solutions' to 'Projects'
+        Skills: hit.skills ? hit.skills.map((skill: any) => skill.tag) : [], // Map 'skills' tags to 'Skills'
       }));
 
       this.filteredData = this.data;
@@ -90,6 +93,12 @@ export class DashboardComponent implements OnInit {
       ];
       this.uniqueJobTitles = [
         ...new Set(this.data.map((person) => person.JobTitle)),
+      ];
+      this.uniqueProjects = [
+        ...new Set(this.data.flatMap((person) => person.Projects)),
+      ];
+      this.uniqueSkills = [
+        ...new Set(this.data.flatMap((person) => person.Skills)),
       ];
     });
   }
