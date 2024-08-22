@@ -10,6 +10,7 @@ namespace SkillSearchAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableCors("AllowSpecificOrigin")] // Apply CORS policy
     public class SkillController : ControllerBase
     {
         private readonly Context _context;
@@ -208,7 +209,11 @@ namespace SkillSearchAPI.Controllers
 
             // Selects the Skill from DB using the Id
             var skill = await _context.Skills.Include(s => s.Users).FirstOrDefaultAsync(s => s.Id == id);
-            var skillToReturn = skill;
+
+            if (skill == null)
+            {
+                return NotFound();
+            }
 
             //// Update the skill properties
             //skill.Tag = skillUpdateDto.Tag;
@@ -217,39 +222,49 @@ namespace SkillSearchAPI.Controllers
             var user = await _context.Users /*.Include(u => u.Skills)*/
                 .FirstOrDefaultAsync(x => x.Id == skillUpdateDto.UserId);
 
-            if (subscribe == "subscribe")
+            if (user == null)
             {
-                // Add the retrieved users to the skill's list of users
-                skill.Users.Add(user);
-
-                await _context.SaveChangesAsync();
-
-                user = await _context.Users
-                    .Include(u => u.Skills)
-                    .Include(u => u.Solutions)
-                    .FirstOrDefaultAsync(x => x.Id == skillUpdateDto.UserId);
-
-                var users = new List<User> { user };
-
-                var algUsers = AlgoliaHelperUsers.TransformToAlgolia(users);
-                await AlgoliaHelperUsers.PartialUpdate(algUsers, _algoliaSettingsUsers);
+                return NotFound();
             }
-            else if (subscribe == "unsubscribe")
+
+            switch (subscribe)
             {
-                skill.Users.Remove(user);
-                //skill.Users.RemoveRange(users);
+                case "subscribe":
+                {
+                    // Add the retrieved users to the skill's list of users
+                    skill.Users.Add(user);
 
-                await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync();
 
-                user = await _context.Users
-                    .Include(u => u.Skills)
-                    .Include(u => u.Solutions)
-                    .FirstOrDefaultAsync(x => x.Id == skillUpdateDto.UserId);
+                    user = await _context.Users
+                        .Include(u => u.Skills)
+                        .Include(u => u.Solutions)
+                        .FirstOrDefaultAsync(x => x.Id == skillUpdateDto.UserId);
 
-                var users = new List<User> { user };
+                    var users = new List<User> { user };
 
-                var algUsers = AlgoliaHelperUsers.TransformToAlgolia(users);
-                await AlgoliaHelperUsers.PartialUpdate(algUsers, _algoliaSettingsUsers);
+                    var algUsers = AlgoliaHelperUsers.TransformToAlgolia(users);
+                    await AlgoliaHelperUsers.PartialUpdate(algUsers, _algoliaSettingsUsers);
+                    break;
+                }
+                case "unsubscribe":
+                {
+                    skill.Users.Remove(user);
+                    //skill.Users.RemoveRange(users);
+
+                    await _context.SaveChangesAsync();
+
+                    user = await _context.Users
+                        .Include(u => u.Skills)
+                        .Include(u => u.Solutions)
+                        .FirstOrDefaultAsync(x => x.Id == skillUpdateDto.UserId);
+
+                    var users = new List<User> { user };
+
+                    var algUsers = AlgoliaHelperUsers.TransformToAlgolia(users);
+                    await AlgoliaHelperUsers.PartialUpdate(algUsers, _algoliaSettingsUsers);
+                    break;
+                }
             }
 
             if (skill.Users != null && skill.Users.Any())
@@ -259,6 +274,56 @@ namespace SkillSearchAPI.Controllers
 
             return Ok(skill);
         }
+
+        //[HttpPut("UpdateUserSkills")]
+        //public async Task<IActionResult> UpdateUserSkills(List<SkillUpdateDto> skillUpdateDtos)
+        //{
+        //    if (skillUpdateDtos == null || !skillUpdateDtos.Any())
+        //    {
+        //        return BadRequest("SkillUpdateDtos is null or empty");
+        //    }
+
+        //    foreach (var skillUpdateDto in skillUpdateDtos)
+        //    {
+        //        var skill = await _context.Skills.Include(s => s.Users)
+        //            .FirstOrDefaultAsync(s => s.Id == skillUpdateDto.Id);
+
+        //        if (skill == null)
+        //        {
+        //            return NotFound();
+        //        }
+
+        //        var user = await _context.Users.Include(u => u.Skills)
+        //            .FirstOrDefaultAsync(u => u.Id == skillUpdateDto.UserId);
+
+        //        if (user == null)
+        //        {
+        //            return NotFound();
+        //        }
+
+        //        if (skill.Users.Contains(user))
+        //        {
+        //            skill.Users.Remove(user);
+        //        }
+        //        else
+        //        {
+        //            skill.Users.Add(user);
+        //        }
+        //    }
+
+        //    await _context.SaveChangesAsync();
+
+        //    var users = await _context.Users
+        //        .Include(u => u.Skills)
+        //        .Include(u => u.Solutions)
+        //        .ToListAsync();
+
+        //    var algUsers = AlgoliaHelperUsers.TransformToAlgolia(users);
+        //    await AlgoliaHelperUsers.PartialUpdate(algUsers, _algoliaSettingsUsers);
+
+        //    return Ok();
+        //}
+
 
         // POST: api/Skill
         // To protect from overposting attacks, enable the specific properties you want to bind to, for

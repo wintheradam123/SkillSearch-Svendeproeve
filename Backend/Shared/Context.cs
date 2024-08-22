@@ -56,29 +56,6 @@ namespace Shared
             modelBuilder.Entity<User>()
                 .HasMany(e => e.Solutions)
                 .WithMany(e => e.Users);
-
-            //modelBuilder.Entity<User>()
-            //    .Property(e => e.ImageSize)
-            //    .HasDefaultValue(0);
-
-            //modelBuilder.Entity<Solution>().HasData(new List<Solution>
-            //{
-            //    new() { Id = 1, Title = "Georg Jensen", Link = "https://www.georgjensen.com/" },
-            //    new() { Id = 2, Title = "ECCO" },
-            //    new() { Id = 3, Title = "Alustre" },
-            //    new() { Id = 4, Title = "Region Midtjylland" },
-            //    new() { Id = 5, Title = "Teamfinder" }
-            //});
-
-            //modelBuilder.Entity<Skill>().HasData(new List<Skill>
-            //{
-            //    new() { Id = 1, Title = ".NET", Category = "Developer" },
-            //    new() { Id = 2, Title = "JavaScript", Category = "Developer" },
-            //    new() { Id = 3, Title = "PHP", Category = "Developer" },
-            //    new() { Id = 4, Title = "Java", Category = "Developer" },
-            //    new() { Id = 5, Title = "TypeScript", Category = "Developer" },
-            //    new() { Id = 6, Title = "React", Category = "Developer" }
-            //});
         }
     }
 }

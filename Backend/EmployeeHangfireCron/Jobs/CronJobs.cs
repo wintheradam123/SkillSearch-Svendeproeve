@@ -215,7 +215,7 @@ namespace GraphCronJob.Jobs
         private static async Task ClearCacheApi()
         {
             var client = new HttpClient();
-            await client.GetAsync("https://teamfinder-api.akqa.dk/api/user/clearCache");
+            await client.GetAsync("http://localhost:7270/api/user/clearCache");
         }
 
         private async Task IndexJobTitles(List<User> users, AlgoliaSettings algoliaSettings)

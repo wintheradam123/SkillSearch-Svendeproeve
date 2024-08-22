@@ -1,16 +1,13 @@
-﻿using Algolia.Search.Models.Common;
+﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Shared;
-using Shared.Helpers;
 using Shared.Models;
 using SkillSearchAPI.Models;
 
-namespace TeamFinderAPI.Controllers
+namespace SkillSearchAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
