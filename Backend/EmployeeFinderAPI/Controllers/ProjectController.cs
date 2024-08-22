@@ -166,7 +166,7 @@ namespace SkillSearchAPI.Controllers
                 return BadRequest("Subscribe has to be sub or unsubbed.");
             }
 
-            if (string.IsNullOrEmpty(solutionUpdateDto.UserId))
+            if (solutionUpdateDto.UserId == 0)
             {
                 return BadRequest("UserId cannot be null");
             }
