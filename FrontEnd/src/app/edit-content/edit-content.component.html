@@ -6,6 +6,21 @@
   <div *ngIf="role === 'Admin'" class="admin-section">
     <div class="input-container">
       <input
+        #newSkill
+        type="text"
+        class="input-field"
+        placeholder="New Skill"
+      />
+      <button
+        (click)="addSkill(newSkill.value); newSkill.value = ''"
+        class="action-button"
+      >
+        Add Skill
+      </button>
+    </div>
+
+    <div class="input-container">
+      <input
         #newProject
         type="text"
         class="input-field"
@@ -18,46 +33,31 @@
         Add Project
       </button>
     </div>
-
-    <div class="input-container">
-      <input
-        #newExpertise
-        type="text"
-        class="input-field"
-        placeholder="New Expertise"
-      />
-      <button
-        (click)="addExpertise(newExpertise.value); newExpertise.value = ''"
-        class="action-button"
-      >
-        Add Expertise
-      </button>
-    </div>
   </div>
 
   <div *ngIf="role === 'User' || role === 'Admin'" class="selection-section">
+    <h3>Select Skills:</h3>
+    <div *ngFor="let skill of skills" class="checkbox-container">
+      <input
+        type="checkbox"
+        [id]="skill.title"
+        [value]="skill.title"
+        (change)="toggleSkillSelection(skill)"
+        [checked]="selectedSkills.includes(skill.title)"
+      />
+      <label [for]="skill.title">{{ skill.title }}</label>
+    </div>
+
     <h3>Select Projects:</h3>
     <div *ngFor="let project of projects" class="checkbox-container">
       <input
         type="checkbox"
-        [id]="project"
-        [value]="project"
+        [id]="project.title"
+        [value]="project.title"
         (change)="toggleProjectSelection(project)"
-        [checked]="selectedProjects.includes(project)"
+        [checked]="selectedProjects.includes(project.title)"
       />
-      <label [for]="project">{{ project }}</label>
-    </div>
-
-    <h3>Select Skills:</h3>
-    <div *ngFor="let expertiseItem of expertise" class="checkbox-container">
-      <input
-        type="checkbox"
-        [id]="expertiseItem"
-        [value]="expertiseItem"
-        (change)="toggleExpertiseSelection(expertiseItem)"
-        [checked]="selectedExpertise.includes(expertiseItem)"
-      />
-      <label [for]="expertiseItem">{{ expertiseItem }}</label>
+      <label [for]="project.title">{{ project.title }}</label>
     </div>
   </div>
 </div>
