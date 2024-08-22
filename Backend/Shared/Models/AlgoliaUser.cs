@@ -12,8 +12,8 @@
         // TODO KINGO: Add an active/inactive boolean flag here
 
         //public string? ImageUrl { get; set; } // TODO: Do we need this field in Algolia?
-        public List<AlgoliaSkill>? Skills { get; set; }
-        public List<AlgoliaSolution>? Solutions { get; set; }
+        public List<AlgoliaSkill> Skills { get; set; }
+        public List<AlgoliaSolution> Solutions { get; set; }
         public string Role { get; set; }
     }
 }
