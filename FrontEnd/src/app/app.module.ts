@@ -18,6 +18,7 @@ import { AuthService } from './Services/auth.service';
 import { RoleGuard } from './role-guard.guard';
 import { CommonModule } from '@angular/common';
 import { CreateUserComponent } from './create-user/create-user.component';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,7 @@ import { CreateUserComponent } from './create-user/create-user.component';
     AppRoutingModule,
     CommonModule,
   ],
-  providers: [AuthService, RoleGuard],
+  providers: [AuthService, RoleGuard, provideAnimationsAsync()],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })

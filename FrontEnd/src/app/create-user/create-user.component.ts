@@ -15,7 +15,17 @@ export class CreateUserComponent {
 
   constructor(private http: HttpClient, private router: Router) {}
 
+  goBack() {
+    this.router.navigate(['/login']);
+  }
+
   createUser() {
+    if (this.password.length < 8) {
+      this.errorMessage = 'Password must be at least 8 characters long.';
+      this.successMessage = '';
+      return;
+    }
+
     const payload = {
       email: this.email,
       password: this.password,

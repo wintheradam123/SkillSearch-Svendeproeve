@@ -1,7 +1,7 @@
 <div class="edit-content-container">
   <div class="header">
-    <h1>Edit Content</h1>
-    <button (click)="goBack()" class="action-button back-button">Back</button>
+    <h1 class="logo" (click)="goBack()">SkillSearch</h1>
+    <h1 class="profile-title">Profile</h1>
   </div>
 
   <div *ngIf="role === 'Admin'" class="admin-section">
@@ -14,9 +14,10 @@
       />
       <button
         (click)="addSkill(newSkill.value); newSkill.value = ''"
-        class="action-button"
+        class="add-icon"
+        title="Click here to add a new skill"
       >
-        Add Skill
+        +
       </button>
     </div>
 
@@ -29,50 +30,57 @@
       />
       <button
         (click)="addProject(newProject.value); newProject.value = ''"
-        class="action-button"
+        class="add-icon"
+        title="Click here to add a new project"
       >
-        Add Project
+        +
       </button>
     </div>
   </div>
 
-  <div *ngIf="role === 'User' || role === 'Admin'" class="selection-section">
-    <h3>Select Skills:</h3>
-    <div *ngFor="let skill of skills" class="checkbox-container">
-      <input
-        type="checkbox"
-        [id]="skill.title"
-        [value]="skill.title"
-        (change)="toggleSkillSelection(skill)"
-        [checked]="skill.isSelected"
-      />
-      <label [for]="skill.title">{{ skill.title }}</label>
-      <button
-        *ngIf="role === 'Admin'"
-        class="delete-button"
-        (click)="confirmDeleteSkill(skill)"
-      >
-        X
-      </button>
+  <div class="selection-container">
+    <div class="selection-section">
+      <h3>Select Skills:</h3>
+      <div *ngFor="let skill of skills" class="checkbox-container">
+        <input
+          type="checkbox"
+          [id]="skill.title"
+          [value]="skill.title"
+          (change)="toggleSkillSelection(skill)"
+          [checked]="skill.isSelected"
+        />
+        <label [for]="skill.title">{{ skill.title }}</label>
+        <button
+          *ngIf="role === 'Admin'"
+          class="delete-button"
+          (click)="confirmDeleteSkill(skill)"
+          title="Click here to delete the skill"
+        >
+          X
+        </button>
+      </div>
     </div>
 
-    <h3>Select Projects:</h3>
-    <div *ngFor="let project of projects" class="checkbox-container">
-      <input
-        type="checkbox"
-        [id]="project.title"
-        [value]="project.title"
-        (change)="toggleProjectSelection(project)"
-        [checked]="project.isSelected"
-      />
-      <label [for]="project.title">{{ project.title }}</label>
-      <button
-        *ngIf="role === 'Admin'"
-        class="delete-button"
-        (click)="confirmDeleteProject(project)"
-      >
-        X
-      </button>
+    <div class="selection-section">
+      <h3>Select Projects:</h3>
+      <div *ngFor="let project of projects" class="checkbox-container">
+        <input
+          type="checkbox"
+          [id]="project.title"
+          [value]="project.title"
+          (change)="toggleProjectSelection(project)"
+          [checked]="project.isSelected"
+        />
+        <label [for]="project.title">{{ project.title }}</label>
+        <button
+          *ngIf="role === 'Admin'"
+          class="delete-button"
+          (click)="confirmDeleteProject(project)"
+          title="Click here to delete the project"
+        >
+          X
+        </button>
+      </div>
     </div>
   </div>
 </div>

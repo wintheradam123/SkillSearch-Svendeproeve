@@ -6,71 +6,50 @@ html {
   background-color: #000;
 }
 
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  flex-direction: column;
-}
-
-form {
+.card {
   background-color: #1c1c1c;
-  padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
-h2 {
+h1 {
   color: #fff;
-  text-align: center;
-  margin-bottom: 20px;
+  font-size: 28px;
 }
 
-.input-container {
-  margin-bottom: 15px;
-}
-
-.input-box {
-  width: 100%;
+.form-group input {
+  height: 45px;
   padding: 10px;
-  margin: 5px 0;
-  display: inline-block;
-  border: none;
+  font-size: 16px;
   border-radius: 4px;
-  box-sizing: border-box;
 }
 
-.login-button {
-  width: 100%;
-  background-color: #4caf50;
-  color: white;
+.btn-success,
+.btn-primary {
+  background-color: hsl(0, 0%, 83%);
+  border-color: hsl(0, 0%, 43%);
+  color: hsl(0, 0%, 37%);
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
-  margin-top: 10px;
+  transition: background-color 0.3s ease;
 }
 
-.create-button {
-  width: 100%;
-  margin-top: 15px;
-  background-color: #4caf50;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
+.btn-success:hover,
+.btn-primary:hover {
+  background-color: #afafaf !important;
 }
 
-.login-button:hover {
-  background-color: #45a049;
+.d-flex .btn {
+  height: 45px;
 }
 
-.error-message {
-  color: #f00;
-  text-align: center;
-  margin-top: 10px;
+.me-2 {
+  margin-right: 5px;
+}
+
+.ms-2 {
+  margin-left: 5px;
 }
