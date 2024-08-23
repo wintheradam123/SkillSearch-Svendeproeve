@@ -128,12 +128,35 @@ export class DashboardComponent implements OnInit {
   }
 
   performSearch() {
-    this.filteredData = this.data.filter(
-      (person) =>
-        person.Name.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        person.Studio.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-        person.JobTitle.toLowerCase().includes(this.searchQuery.toLowerCase())
-    );
+    this.filteredData = this.data.filter((person) => {
+      const searchQueryLower = this.searchQuery.toLowerCase();
+
+      const nameMatch = person.Name.toLowerCase().includes(searchQueryLower);
+      const emailMatch = person.userPrincipalName
+        .toLowerCase()
+        .includes(searchQueryLower);
+      const studioMatch =
+        person.Studio.toLowerCase().includes(searchQueryLower);
+      const jobTitleMatch =
+        person.JobTitle.toLowerCase().includes(searchQueryLower);
+
+      const projectMatch = person.Projects.some((project: string) =>
+        project.toLowerCase().includes(searchQueryLower)
+      );
+
+      const skillMatch = person.Skills.some((skill: string) =>
+        skill.toLowerCase().includes(searchQueryLower)
+      );
+
+      return (
+        nameMatch ||
+        emailMatch ||
+        studioMatch ||
+        jobTitleMatch ||
+        projectMatch ||
+        skillMatch
+      );
+    });
   }
 
   logout() {
