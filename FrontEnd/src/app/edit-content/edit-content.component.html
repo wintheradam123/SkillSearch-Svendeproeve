@@ -43,7 +43,7 @@
         [id]="skill.title"
         [value]="skill.title"
         (change)="toggleSkillSelection(skill)"
-        [checked]="selectedSkills.includes(skill.title)"
+        [checked]="skill.isSelected"
       />
       <label [for]="skill.title">{{ skill.title }}</label>
     </div>
@@ -55,7 +55,7 @@
         [id]="project.title"
         [value]="project.title"
         (change)="toggleProjectSelection(project)"
-        [checked]="selectedProjects.includes(project.title)"
+        [checked]="project.isSelected"
       />
       <label [for]="project.title">{{ project.title }}</label>
     </div>

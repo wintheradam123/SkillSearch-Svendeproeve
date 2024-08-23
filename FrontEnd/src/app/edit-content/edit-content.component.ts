@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../Services/auth.service';
-import { DataService } from '../Services/data-service.service';
 import { HttpClient } from '@angular/common/http';
+import algoliasearch from 'algoliasearch/lite';
 
 @Component({
   selector: 'app-edit-content',
@@ -10,45 +10,93 @@ import { HttpClient } from '@angular/common/http';
 })
 export class EditContentComponent implements OnInit {
   role: string = '';
-  skills: any[] = []; // Updated to store objects with skill details
-  projects: any[] = []; // Updated to store objects with project details
-  selectedSkills: string[] = [];
-  selectedProjects: string[] = [];
-  userId: number | null = null; // Store the user ID
+  skills: any[] = [];
+  projects: any[] = [];
+  selectedSkills: Set<string> = new Set();
+  selectedProjects: Set<string> = new Set();
+  userId: number | null = null;
 
   private readonly skillsApiUrl = 'https://localhost:7208/api/Skill';
   private readonly projectsApiUrl = 'https://localhost:7208/api/Project';
 
-  constructor(
-    private authService: AuthService,
-    private dataService: DataService,
-    private http: HttpClient // Inject HttpClient to make HTTP requests
-  ) {}
+  // Algolia credentials
+  algoliaAppId: string = 'UW17LRXEG9';
+  algoliaApiKey: string = '21a8d95e001480809f816fdebcdeee77';
+  algoliaIndexName: string = 'dev_SkillSearch_Users';
+  private algoliaClient: any;
+  private algoliaIndex: any;
+
+  constructor(private authService: AuthService, private http: HttpClient) {
+    this.algoliaClient = algoliasearch(this.algoliaAppId, this.algoliaApiKey);
+    this.algoliaIndex = this.algoliaClient.initIndex(this.algoliaIndexName);
+  }
 
   ngOnInit() {
     const currentUser = this.authService.getCurrentUserValue();
     if (currentUser) {
       this.role = currentUser.role;
-      this.userId = currentUser.id; // Retrieve the user ID from the logged-in user
-      this.selectedSkills = currentUser.Projects || []; // Now "Projects" becomes "Skills"
-      this.selectedProjects = currentUser.Expertise || []; // Expertise now refers to Projects
+      this.userId = currentUser.id;
     }
 
-    // Fetch skills from the API and populate the skills array
+    // Fetch user data from Algolia
+    this.fetchUserData();
+  }
+
+  fetchUserData() {
+    const currentUserEmail =
+      this.authService.getCurrentUserValue()?.userPrincipalName;
+    if (!currentUserEmail) {
+      console.error('User email not found');
+      return;
+    }
+
+    // Fetch the user's skills and projects from Algolia
+    this.algoliaIndex
+      .search(currentUserEmail)
+      .then((response: any) => {
+        const user = response.hits[0]; // Assuming the user is the first result
+
+        this.selectedSkills = new Set(
+          user.skills ? user.skills.map((skill: any) => skill.tag) : []
+        );
+
+        this.selectedProjects = new Set(
+          user.solutions
+            ? user.solutions.map((solution: any) => solution.solutionName)
+            : []
+        );
+
+        // Now fetch skills and projects and compare
+        this.loadSkills();
+        this.loadProjects();
+      })
+      .catch((error: any) => {
+        console.error('Error fetching user data from Algolia:', error);
+      });
+  }
+
+  loadSkills() {
     this.http.get<any[]>(this.skillsApiUrl).subscribe(
       (response) => {
-        this.skills = response; // Use the API response to set the skills
+        this.skills = response.map((skill) => ({
+          ...skill,
+          isSelected: this.selectedSkills.has(skill.title),
+        }));
         console.log('Skills loaded:', this.skills);
       },
       (error) => {
         console.error('Error fetching skills:', error);
       }
     );
+  }
 
-    // Fetch projects from the API and populate the projects array
+  loadProjects() {
     this.http.get<any[]>(this.projectsApiUrl).subscribe(
       (response) => {
-        this.projects = response; // Use the API response to set the projects
+        this.projects = response.map((project) => ({
+          ...project,
+          isSelected: this.selectedProjects.has(project.title),
+        }));
         console.log('Projects loaded:', this.projects);
       },
       (error) => {
@@ -57,28 +105,78 @@ export class EditContentComponent implements OnInit {
     );
   }
 
-  addSkill(skill: string) {
+  toggleSkillSelection(skill: any) {
+    if (skill.isSelected) {
+      this.selectedSkills.delete(skill.title);
+    } else {
+      this.selectedSkills.add(skill.title);
+    }
+    skill.isSelected = !skill.isSelected;
+    this.saveSkillSubscription(
+      skill.id,
+      skill.isSelected ? 'subscribe' : 'unsubscribe'
+    );
+  }
+
+  toggleProjectSelection(project: any) {
+    if (project.isSelected) {
+      this.selectedProjects.delete(project.title);
+    } else {
+      this.selectedProjects.add(project.title);
+    }
+    project.isSelected = !project.isSelected;
+    this.saveProjectSubscription(
+      project.id,
+      project.isSelected ? 'subscribe' : 'unsubscribe'
+    );
+  }
+
+  saveSkillSubscription(skillId: number, action: 'subscribe' | 'unsubscribe') {
+    const url = `${this.skillsApiUrl}/Subscribe/${skillId}?subscribe=${action}`;
+    if (this.userId !== null) {
+      this.http.put(url, { Id: skillId, UserId: this.userId }).subscribe(
+        (response: any) => {
+          console.log(`Skill ${action}d successfully:`, response);
+        },
+        (error) => {
+          console.error(`Error during skill ${action} operation:`, error);
+        }
+      );
+    }
+  }
+
+  saveProjectSubscription(
+    projectId: number,
+    action: 'subscribe' | 'unsubscribe'
+  ) {
+    const url = `${this.projectsApiUrl}/Subscribe/${projectId}?subscribe=${action}`;
+    if (this.userId !== null) {
+      this.http.put(url, { Id: projectId, UserId: this.userId }).subscribe(
+        (response: any) => {
+          console.log(`Project ${action}d successfully:`, response);
+        },
+        (error) => {
+          console.error(`Error during project ${action} operation:`, error);
+        }
+      );
+    }
+  }
+
+  addSkill(skillTitle: string) {
     if (this.role === 'Admin') {
-      // Create the skill payload
       const newSkill = {
         id: 0, // ID will be auto-incremented by the backend
-        title: skill.trim(), // Ensure that the title is not empty or just whitespace
+        title: skillTitle.trim(), // Ensure that the title is not empty or just whitespace
         category: 'string', // Placeholder value for category, adjust as needed
         users: [], // Initially an empty array
       };
 
-      // Log the payload for debugging
-      console.log('Sending skill payload:', newSkill);
-
-      // Send the POST request
       this.http.post(this.skillsApiUrl, newSkill).subscribe(
         (response: any) => {
           console.log('Skill added successfully:', response);
-          // Add the new skill to the local list and update the UI
           this.skills.push(response);
         },
         (error) => {
-          // Log the error response for debugging
           console.error('Error adding skill:', error);
           if (error.status === 400) {
             console.error(
@@ -90,88 +188,27 @@ export class EditContentComponent implements OnInit {
     }
   }
 
-  addProject(project: string) {
+  addProject(projectTitle: string) {
     if (this.role === 'Admin') {
-      // Create the project payload
       const newProject = {
         id: 0, // ID will be auto-incremented by the backend
-        title: project.trim(), // Ensure that the title is not empty or just whitespace
+        title: projectTitle.trim(), // Ensure that the title is not empty or just whitespace
         category: 'string', // Placeholder value for category, adjust as needed
         users: [], // Initially an empty array
       };
 
-      // Log the payload for debugging
-      console.log('Sending project payload:', newProject);
-
-      // Send the POST request
       this.http.post(this.projectsApiUrl, newProject).subscribe(
         (response: any) => {
           console.log('Project added successfully:', response);
-          // Add the new project to the local list and update the UI
           this.projects.push(response);
         },
         (error) => {
-          // Log the error response for debugging
           console.error('Error adding project:', error);
           if (error.status === 400) {
             console.error(
               'Bad Request - Check if all required fields are correct.'
             );
           }
-        }
-      );
-    }
-  }
-
-  toggleSkillSelection(skill: any) {
-    const skillId = skill.id; // Access the skill ID from the skill object
-    if (this.selectedSkills.includes(skill.title)) {
-      this.selectedSkills = this.selectedSkills.filter(
-        (s) => s !== skill.title
-      );
-      this.subscribeOrUnsubscribe(skillId, 'unsubscribe', 'Skill'); // Call API to unsubscribe
-    } else {
-      this.selectedSkills.push(skill.title);
-      this.subscribeOrUnsubscribe(skillId, 'subscribe', 'Skill'); // Call API to subscribe
-    }
-    this.authService.updateCurrentUserProjects(this.selectedSkills); // Here "Projects" are actually skills
-  }
-
-  toggleProjectSelection(project: any) {
-    const projectId = project.id; // Access the project ID from the project object
-    if (this.selectedProjects.includes(project.title)) {
-      this.selectedProjects = this.selectedProjects.filter(
-        (p) => p !== project.title
-      );
-      this.subscribeOrUnsubscribe(projectId, 'unsubscribe', 'Project'); // Call API to unsubscribe
-    } else {
-      this.selectedProjects.push(project.title);
-      this.subscribeOrUnsubscribe(projectId, 'subscribe', 'Project'); // Call API to subscribe
-    }
-    this.authService.updateCurrentUserExpertise(this.selectedProjects); // Here "Expertise" are actually projects
-  }
-
-  subscribeOrUnsubscribe(
-    itemId: number,
-    action: 'subscribe' | 'unsubscribe',
-    type: 'Skill' | 'Project'
-  ) {
-    const apiUrl = type === 'Skill' ? this.skillsApiUrl : this.projectsApiUrl;
-    if (this.userId !== null) {
-      const url = `${apiUrl}/Subscribe/${itemId}?subscribe=${action}`;
-
-      // Send both itemId (skillId/projectId) and userId in the request body
-      const updateDto = {
-        Id: itemId,
-        UserId: this.userId,
-      };
-
-      this.http.put(url, updateDto).subscribe(
-        (response: any) => {
-          console.log(`${type} ${action}d successfully:`, response);
-        },
-        (error) => {
-          console.error(`Error during ${action} operation:`, error);
         }
       );
     }
