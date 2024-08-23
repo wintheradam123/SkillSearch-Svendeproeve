@@ -21,13 +21,36 @@ html {
 
 .header {
   width: 100%;
-  text-align: center;
   margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
 }
 
-.header h1 {
+.logo {
+  position: absolute;
+  left: 20px;
   margin: 0;
+  font-size: 24px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #fff;
+  cursor: pointer;
+}
+
+.logo:hover {
+  color: #aaa;
+}
+
+.profile-title {
+  margin: 0;
+  font-size: 36px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
 }
 
 .admin-section {
@@ -38,71 +61,95 @@ html {
 
 .input-container {
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
 }
 
 .input-field {
-  width: calc(100% - 110px);
+  width: calc(100% - 50px); /* Adjusted to allow space for the icon */
+  padding: 12px;
+  font-size: 16px;
+  border-radius: 4px; /* Squared-off corners */
+  border: 2px solid hsl(0, 0%, 70%);
+  background-color: #2c2c2c; /* Slightly lighter background for contrast */
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-field:focus {
+  border-color: #aaa; /* Subtle change on focus */
+  box-shadow: 0 0 10px rgba(170, 170, 170, 0.5); /* Softer glow on focus */
+}
+
+/* Styling for the add icon */
+.add-icon {
+  background-color: #000; /* Black background */
+  color: #fff; /* White icon */
   padding: 10px;
-  font-size: 16px;
-  border-radius: 4px;
   border: none;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-  margin-right: 10px;
-}
-
-.action-button {
-  background-color: #d3d3d3 !important;
-  color: #000 !important;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
+  border-radius: 50%; /* Rounded icon */
   cursor: pointer;
-  font-size: 16px;
+  font-size: 24px; /* Large icon size */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.3s ease;
+  margin-left: 10px; /* Space between input and icon */
 }
 
-.action-button:hover {
-  background-color: #bfbfbf !important;
+.add-icon:hover {
+  transform: scale(1.2); /* Slightly larger on hover */
 }
 
+/* Flexbox layout for skills and projects sections */
 .selection-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   width: 100%;
   max-width: 1000px;
 }
 
 .selection-section {
-  width: 48%;
+  width: 25%;
 }
 
 h3 {
   margin-top: 20px;
   color: #fff !important;
+  font-family: "Montserrat", sans-serif;
+  font-size: 20px;
+  font-weight: 600;
 }
 
 .checkbox-container {
+  display: flex;
+  align-items: center;
   margin-bottom: 10px;
-}
-
-input[type="checkbox"] {
-  margin-right: 10px;
-  margin-bottom: 3px;
 }
 
 label {
   font-size: 16px;
   color: #fff !important;
+  margin-right: 10px;
+  flex-grow: 1; /* Ensure labels take up available space */
 }
 
 .delete-button {
-  background-color: red;
-  color: white;
-  border: none;
-  margin-left: 10px;
+  background: none; /* Remove the background */
+  color: red; /* Set the X color to red */
+  border: none; /* Remove the border */
   cursor: pointer;
-  padding: 3px 8px;
-  border-radius: 50%;
-  font-size: 12px;
+  font-size: 20px; /* Adjust the size of the X */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0; /* Remove padding */
+}
+
+.delete-button:hover {
+  color: darkred; /* Change color on hover */
 }
 
 .confirmation-dialog {
@@ -110,33 +157,31 @@ label {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: white;
+  background-color: #1c1c1c;
   padding: 20px;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
   z-index: 1000;
+  border-radius: 8px;
 }
 
 .confirmation-dialog p {
   margin-bottom: 20px;
+  color: #fff;
 }
 
 .confirmation-dialog button {
   margin-right: 10px;
-}
-
-.back-button {
-  position: absolute;
-  left: 20px; /* Add space from the left edge */
-  top: 20px; /* Add space from the top edge */
-  background-color: #d3d3d3 !important;
-  color: #000 !important;
+  background-color: hsl(0, 0%, 80%);
+  border-color: hsl(0, 0%, 43%);
+  color: hsl(0, 1%, 37%);
   padding: 10px 20px;
   border: none;
-  border-radius: 4px;
+  border-radius: 4px; /* Squared-off corners */
   cursor: pointer;
   font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
-.back-button:hover {
-  background-color: #bfbfbf !important;
+.confirmation-dialog button:hover {
+  background-color: #d9d9d9 !important;
 }
