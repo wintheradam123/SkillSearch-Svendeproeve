@@ -15,6 +15,10 @@ export class CreateUserComponent {
 
   constructor(private http: HttpClient, private router: Router) {}
 
+  goBack() {
+    this.router.navigate(['/login']);
+  }
+
   createUser() {
     const payload = {
       email: this.email,
