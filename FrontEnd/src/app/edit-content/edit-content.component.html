@@ -1,6 +1,7 @@
 <div class="edit-content-container">
   <div class="header">
     <h1>Edit Content</h1>
+    <button (click)="goBack()" class="action-button back-button">Back</button>
   </div>
 
   <div *ngIf="role === 'Admin'" class="admin-section">
@@ -46,6 +47,13 @@
         [checked]="skill.isSelected"
       />
       <label [for]="skill.title">{{ skill.title }}</label>
+      <button
+        *ngIf="role === 'Admin'"
+        class="delete-button"
+        (click)="confirmDeleteSkill(skill)"
+      >
+        X
+      </button>
     </div>
 
     <h3>Select Projects:</h3>
@@ -58,6 +66,20 @@
         [checked]="project.isSelected"
       />
       <label [for]="project.title">{{ project.title }}</label>
+      <button
+        *ngIf="role === 'Admin'"
+        class="delete-button"
+        (click)="confirmDeleteProject(project)"
+      >
+        X
+      </button>
     </div>
   </div>
+</div>
+
+<!-- Confirmation Dialog -->
+<div *ngIf="confirmDeleteItem" class="confirmation-dialog">
+  <p>Are you sure you want to delete: {{ confirmDeleteItem.title }}?</p>
+  <button (click)="deleteItem()">Yes</button>
+  <button (click)="cancelDelete()">No</button>
 </div>

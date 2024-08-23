@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../Services/auth.service';
 import { HttpClient } from '@angular/common/http';
 import algoliasearch from 'algoliasearch/lite';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-content',
@@ -16,6 +17,8 @@ export class EditContentComponent implements OnInit {
   selectedProjects: Set<string> = new Set();
   userId: number | null = null;
 
+  confirmDeleteItem: any = null; // The item (skill/project) to be deleted
+
   private readonly skillsApiUrl = 'https://localhost:7208/api/Skill';
   private readonly projectsApiUrl = 'https://localhost:7208/api/Project';
 
@@ -26,7 +29,11 @@ export class EditContentComponent implements OnInit {
   private algoliaClient: any;
   private algoliaIndex: any;
 
-  constructor(private authService: AuthService, private http: HttpClient) {
+  constructor(
+    private authService: AuthService,
+    private http: HttpClient,
+    private router: Router
+  ) {
     this.algoliaClient = algoliasearch(this.algoliaAppId, this.algoliaApiKey);
     this.algoliaIndex = this.algoliaClient.initIndex(this.algoliaIndexName);
   }
@@ -38,7 +45,6 @@ export class EditContentComponent implements OnInit {
       this.userId = currentUser.id;
     }
 
-    // Fetch user data from Algolia
     this.fetchUserData();
   }
 
@@ -50,11 +56,10 @@ export class EditContentComponent implements OnInit {
       return;
     }
 
-    // Fetch the user's skills and projects from Algolia
     this.algoliaIndex
       .search(currentUserEmail)
       .then((response: any) => {
-        const user = response.hits[0]; // Assuming the user is the first result
+        const user = response.hits[0];
 
         this.selectedSkills = new Set(
           user.skills ? user.skills.map((skill: any) => skill.tag) : []
@@ -66,7 +71,6 @@ export class EditContentComponent implements OnInit {
             : []
         );
 
-        // Now fetch skills and projects and compare
         this.loadSkills();
         this.loadProjects();
       })
@@ -165,10 +169,10 @@ export class EditContentComponent implements OnInit {
   addSkill(skillTitle: string) {
     if (this.role === 'Admin') {
       const newSkill = {
-        id: 0, // ID will be auto-incremented by the backend
-        title: skillTitle.trim(), // Ensure that the title is not empty or just whitespace
-        category: 'string', // Placeholder value for category, adjust as needed
-        users: [], // Initially an empty array
+        id: 0,
+        title: skillTitle.trim(),
+        category: 'string',
+        users: [],
       };
 
       this.http.post(this.skillsApiUrl, newSkill).subscribe(
@@ -191,10 +195,10 @@ export class EditContentComponent implements OnInit {
   addProject(projectTitle: string) {
     if (this.role === 'Admin') {
       const newProject = {
-        id: 0, // ID will be auto-incremented by the backend
-        title: projectTitle.trim(), // Ensure that the title is not empty or just whitespace
-        category: 'string', // Placeholder value for category, adjust as needed
-        users: [], // Initially an empty array
+        id: 0,
+        title: projectTitle.trim(),
+        category: 'string',
+        users: [],
       };
 
       this.http.post(this.projectsApiUrl, newProject).subscribe(
@@ -212,5 +216,67 @@ export class EditContentComponent implements OnInit {
         }
       );
     }
+  }
+
+  confirmDeleteSkill(skill: any) {
+    this.confirmDeleteItem = { ...skill, type: 'Skill' };
+  }
+
+  confirmDeleteProject(project: any) {
+    this.confirmDeleteItem = { ...project, type: 'Project' };
+  }
+
+  deleteItem() {
+    if (this.confirmDeleteItem) {
+      const url =
+        this.confirmDeleteItem.type === 'Skill'
+          ? `${this.skillsApiUrl}/${this.confirmDeleteItem.id}`
+          : `${this.projectsApiUrl}/${this.confirmDeleteItem.id}`;
+
+      this.http.delete(url).subscribe(
+        () => {
+          console.log(`${this.confirmDeleteItem.type} deleted successfully`);
+
+          // Unsubscribe users from the deleted skill/project
+          if (this.confirmDeleteItem.type === 'Skill') {
+            this.skills = this.skills.filter(
+              (skill) => skill.id !== this.confirmDeleteItem.id
+            );
+            this.selectedSkills.delete(this.confirmDeleteItem.title);
+            // Ensure unsubscribing from the skill
+            this.saveSkillSubscription(
+              this.confirmDeleteItem.id,
+              'unsubscribe'
+            );
+          } else {
+            this.projects = this.projects.filter(
+              (project) => project.id !== this.confirmDeleteItem.id
+            );
+            this.selectedProjects.delete(this.confirmDeleteItem.title);
+            // Ensure unsubscribing from the project
+            this.saveProjectSubscription(
+              this.confirmDeleteItem.id,
+              'unsubscribe'
+            );
+          }
+
+          this.confirmDeleteItem = null;
+        },
+        (error) => {
+          console.error(
+            `Error deleting ${this.confirmDeleteItem.type}:`,
+            error
+          );
+        }
+      );
+    }
+  }
+
+  cancelDelete() {
+    this.confirmDeleteItem = null;
+  }
+
+  goBack() {
+    this.router.navigate(['/dashboard']); // Use the router to navigate
   }
 }

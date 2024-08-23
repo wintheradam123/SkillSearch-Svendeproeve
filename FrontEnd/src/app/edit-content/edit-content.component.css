@@ -23,10 +23,14 @@ html {
   width: 100%;
   text-align: center;
   margin-bottom: 20px;
+  position: relative;
 }
 
-.admin-section,
-.selection-section {
+.header h1 {
+  margin: 0;
+}
+
+.admin-section {
   width: 100%;
   max-width: 600px;
   margin-bottom: 20px;
@@ -60,6 +64,17 @@ html {
   background-color: #bfbfbf !important;
 }
 
+.selection-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.selection-section {
+  width: 48%;
+}
+
 h3 {
   margin-top: 20px;
   color: #fff !important;
@@ -77,4 +92,51 @@ input[type="checkbox"] {
 label {
   font-size: 16px;
   color: #fff !important;
+}
+
+.delete-button {
+  background-color: red;
+  color: white;
+  border: none;
+  margin-left: 10px;
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+.confirmation-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.confirmation-dialog p {
+  margin-bottom: 20px;
+}
+
+.confirmation-dialog button {
+  margin-right: 10px;
+}
+
+.back-button {
+  position: absolute;
+  left: 20px; /* Add space from the left edge */
+  top: 20px; /* Add space from the top edge */
+  background-color: #d3d3d3 !important;
+  color: #000 !important;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.back-button:hover {
+  background-color: #bfbfbf !important;
 }
