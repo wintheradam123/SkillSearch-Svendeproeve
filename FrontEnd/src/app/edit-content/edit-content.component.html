@@ -15,6 +15,7 @@
       <button
         (click)="addSkill(newSkill.value); newSkill.value = ''"
         class="add-icon"
+        title="Click here to add a new skill"
       >
         +
       </button>
@@ -30,6 +31,7 @@
       <button
         (click)="addProject(newProject.value); newProject.value = ''"
         class="add-icon"
+        title="Click here to add a new project"
       >
         +
       </button>
@@ -52,6 +54,7 @@
           *ngIf="role === 'Admin'"
           class="delete-button"
           (click)="confirmDeleteSkill(skill)"
+          title="Click here to delete the skill"
         >
           X
         </button>
@@ -73,6 +76,7 @@
           *ngIf="role === 'Admin'"
           class="delete-button"
           (click)="confirmDeleteProject(project)"
+          title="Click here to delete the project"
         >
           X
         </button>

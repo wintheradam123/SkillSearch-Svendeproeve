@@ -20,6 +20,12 @@ export class CreateUserComponent {
   }
 
   createUser() {
+    if (this.password.length < 8) {
+      this.errorMessage = 'Password must be at least 8 characters long.';
+      this.successMessage = '';
+      return;
+    }
+
     const payload = {
       email: this.email,
       password: this.password,
