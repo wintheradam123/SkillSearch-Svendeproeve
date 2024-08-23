@@ -24,21 +24,24 @@ h1 {
   border-radius: 4px;
 }
 
-.btn-success {
-  background-color: hsl(209, 77%, 38%);
-  border-color: hsl(209, 77%, 38%);
-}
-
+.btn-success,
 .btn-primary {
-  background-color: hsl(209, 77%, 38%);
-  border-color: hsl(209, 77%, 38%);
+  background-color: hsl(0, 0%, 83%);
+  border-color: hsl(0, 0%, 43%);
+  color: hsl(0, 0%, 37%);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
 }
 
-.btn-success:hover {
-  background-color: #2e00fd;
+.btn-success:hover,
+.btn-primary:hover {
+  background-color: #afafaf !important;
 }
 
-/* Adjust spacing between buttons */
 .d-flex .btn {
   height: 45px;
 }

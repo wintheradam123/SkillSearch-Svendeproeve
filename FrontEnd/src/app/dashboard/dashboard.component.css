@@ -36,23 +36,29 @@ html {
 h1 {
   color: #fff !important;
   margin-bottom: 20px;
+  font-size: 36px; /* Increase the font size */
+  font-family: "Montserrat", sans-serif; /* Use a clean, modern font */
+  font-weight: 700; /* Make the text bold */
+  letter-spacing: 1px; /* Add some spacing between the letters */
 }
 
 .logout-button,
 .action-button {
-  background-color: #d3d3d3 !important;
-  color: #000 !important;
+  background-color: hsl(0, 0%, 49%) important!;
+  border-color: hsl(0, 0%, 43%);
+  color: hsl(0, 1%, 37%);
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
   margin-left: 10px;
+  transition: background-color 0.3s ease;
 }
 
 .logout-button:hover,
 .action-button:hover {
-  background-color: #bfbfbf !important;
+  background-color: #6c6c6d !important;
 }
 
 .welcome-message {
@@ -65,31 +71,76 @@ h1 {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
 .search-bar {
   width: 50%;
-  padding: 10px;
+  padding: 12px;
   font-size: 16px;
-  border-radius: 4px;
-  border: none;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  border-radius: 25px;
+  border: 2px solid hsl(0, 0%, 61%);
+  background-color: #1c1c1c;
+  color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-bar:focus {
+  border-color: #0e0e0e;
+  box-shadow: 0 0 10px rgba(32, 32, 32, 0.5);
 }
 
 .search-button {
-  background-color: #d3d3d3 !important;
-  color: #000 !important;
-  padding: 10px 20px;
+  background: none;
   border: none;
-  border-radius: 4px;
+  padding: 0;
   cursor: pointer;
-  font-size: 16px;
   margin-left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
 }
 
 .search-button:hover {
-  background-color: #bfbfbf !important;
+  transform: scale(1.2);
+}
+
+.search-button .fa-search {
+  color: #fff;
+  font-size: 24px;
+}
+
+.filter-container {
+  width: 52%; /* Match the width of the search bar */
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 20px; /* Adjust space between filter and search bar */
+}
+
+.filter-button {
+  background-color: #000;
+  color: #fff;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.filter-button:hover {
+  background-color: #333;
+}
+
+.filter-button .fa {
+  margin-left: 8px;
 }
 
 .content-sections {
@@ -105,6 +156,9 @@ h1 {
 
 .content-section h2 {
   color: #fff !important;
+  font-family: "Montserrat", sans-serif; /* Updated font */
+  font-size: 20px; /* Slightly increased font size */
+  font-weight: 600; /* Bold text */
 }
 
 .content-section ul {
@@ -137,6 +191,9 @@ h1 {
 
 .people-section h2 {
   color: #fff !important;
+  font-family: "Montserrat", sans-serif; /* Updated font */
+  font-size: 24px; /* Increased font size */
+  font-weight: 600; /* Bold text */
 }
 
 .no-people-message {
@@ -147,15 +204,18 @@ h1 {
 }
 
 .person-card {
-  background-color: #1c1c1c;
-  padding: 15px;
+  background-color: #131212;
+  padding: 20px; /* Increased padding */
   margin-bottom: 15px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  font-family: "Montserrat", sans-serif; /* Updated font */
+  font-size: 18px; /* Slightly larger font */
+  line-height: 1.5; /* Improved line spacing */
 }
 
 .person-card p {
-  margin: 5px 0;
+  margin: 8px 0; /* Increased spacing between paragraphs */
 }
 
 .admin-content,
@@ -165,9 +225,6 @@ h1 {
 
 p {
   margin: 10px 0;
-}
-app-algolia-react {
-  border: 2px solid red; /* Temporary border to see where the component is */
 }
 
 /* Custom scrollbar styling */
