@@ -281,6 +281,9 @@ namespace SkillSearchAPI.Controllers
                 {
                     _context.Update(user);
                     await _context.SaveChangesAsync();
+
+                    _cache.Remove($"user_{id}");
+                    _cache.Remove("usersList");
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
@@ -353,6 +356,10 @@ namespace SkillSearchAPI.Controllers
 
                 _context.Update(userToUpdate);
                 await _context.SaveChangesAsync();
+
+                // Clear the cache for the updated user
+                _cache.Remove($"user_{userToUpdate.Id}");
+                _cache.Remove("usersList");
 
                 return Ok();
             }
