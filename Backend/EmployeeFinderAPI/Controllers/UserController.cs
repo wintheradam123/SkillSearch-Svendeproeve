@@ -6,7 +6,6 @@ using Newtonsoft.Json;
 using Shared;
 using Shared.Models;
 using SkillSearchAPI.Models;
-using Microsoft.Extensions.Caching.Memory;
 
 namespace SkillSearchAPI.Controllers
 {
@@ -24,12 +23,13 @@ namespace SkillSearchAPI.Controllers
         private readonly Context _context;
 
 
-        private IMemoryCache _cache;
+        //private IMemoryCache _cache;
 
-        public UserController(Context context, IMemoryCache cache)
+        public UserController(Context context /*, IMemoryCache cache */ /*, IUserService userService*/)
         {
             _context = context;
-            _cache = cache;
+            //_cache = cache;
+            //_userService = userService;
         }
 
         // GET: api/User
@@ -38,41 +38,32 @@ namespace SkillSearchAPI.Controllers
         {
             try
             {
-                if (!_cache.TryGetValue("usersList", out List<User>? users))
-                {
-                    users = await _context.Users
-                        .OrderBy(on => on.DisplayName)
-                        .Select(u => new User
-                        {
-                            Id = u.Id,
-                            ExternalId = u.ExternalId,
-                            DisplayName = u.DisplayName,
-                            JobTitle = u.JobTitle,
-                            OfficeLocation = u.OfficeLocation,
-                            Skills = u.Skills,
-                            Solutions = u.Solutions,
-                            UserPrincipalName = u.UserPrincipalName,
-                            Role = u.Role,
-                            //ImageSize = u.ImageSize,
-                            //ImageData = null
-                        })
-                        .ToListAsync();
+                var users = await _context.Users
+                    .OrderBy(on => on.DisplayName)
+                    .Select(u => new User
+                    {
+                        Id = u.Id,
+                        ExternalId = u.ExternalId,
+                        DisplayName = u.DisplayName,
+                        JobTitle = u.JobTitle,
+                        OfficeLocation = u.OfficeLocation,
+                        Skills = u.Skills,
+                        Solutions = u.Solutions,
+                        UserPrincipalName = u.UserPrincipalName,
+                        Role = u.Role,
+                        //ImageSize = u.ImageSize,
+                        //ImageData = null
+                    })
+                    .ToListAsync();
 
-                    var cacheEntryOptions = new MemoryCacheEntryOptions()
-                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+                    var metadata = new
+                    {
+                        users.Count
+                    };
 
-                    _cache.Set("usersList", users, cacheEntryOptions);
-                }
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-
-                var metadata = new
-                {
-                    users.Count
-                };
-
-                Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
-
-                return Ok(users);
+                    return Ok(users);
             }
             catch (Exception e)
             {
@@ -89,35 +80,27 @@ namespace SkillSearchAPI.Controllers
                 if (id == 0)
                     return BadRequest("ID is cannot be empty");
 
-                if (!_cache.TryGetValue($"user_{id}", out User? user))
-                {
-                    user = await _context.Users
-                        .Select(u => new User
-                        {
-                            Id = u.Id,
-                            ExternalId = u.ExternalId,
-                            DisplayName = u.DisplayName,
-                            JobTitle = u.JobTitle,
-                            OfficeLocation = u.OfficeLocation,
-                            Skills = u.Skills,
-                            Solutions = u.Solutions,
-                            UserPrincipalName = u.UserPrincipalName,
-                            Role = u.Role,
-                            //ImageSize = u.ImageSize,
-                            //ImageData = null
-                        })
-                        .FirstOrDefaultAsync(u => u.Id == id);
-                    if (user == null)
+                var user = await _context.Users
+                    .Select(u => new User
                     {
-                        return NotFound(id);
-                    }
+                        Id = u.Id,
+                        ExternalId = u.ExternalId,
+                        DisplayName = u.DisplayName,
+                        JobTitle = u.JobTitle,
+                        OfficeLocation = u.OfficeLocation,
+                        Skills = u.Skills,
+                        Solutions = u.Solutions,
+                        UserPrincipalName = u.UserPrincipalName,
+                        Role = u.Role,
+                        //ImageSize = u.ImageSize,
+                        //ImageData = null
+                    })
+                    .FirstOrDefaultAsync(u => u.Id == id);
 
-                    var cacheEntryOptions = new MemoryCacheEntryOptions()
-                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
-
-                    _cache.Set($"user_{id}", user, cacheEntryOptions);
+                if (user == null)
+                {
+                    return NotFound(id);
                 }
-
 
                 return user;
             }
@@ -208,7 +191,7 @@ namespace SkillSearchAPI.Controllers
             }
         }
 
-        // GET: api/User/image/1234
+        // GET: api/User/image/3771db45-af47-4c1e-ab34-dacc653f58ff
         // return image as byte array
         //[HttpGet("image/{azureId}")]
         //public async Task<ActionResult<byte[]>> GetImageUserId(int externalId)
@@ -247,23 +230,23 @@ namespace SkillSearchAPI.Controllers
         //    }
         //}
 
-        [HttpGet("clearCache")]
-        public ActionResult ClearCache()
-        {
-            try
-            {
-                if (_cache is MemoryCache concreteMemoryCache)
-                {
-                    concreteMemoryCache.Clear();
-                }
+        //[HttpGet("clearCache")]
+        //public ActionResult ClearCache()
+        //{
+        //    try
+        //    {
+        //        if (_cache is MemoryCache concreteMemoryCache)
+        //        {
+        //            concreteMemoryCache.Clear();
+        //        }
 
-                return Ok();
-            }
-            catch (Exception e)
-            {
-                return BadRequest("Error occurred while clearing cache: " + e.Message);
-            }
-        }
+        //        return Ok();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        return BadRequest("Error occurred while clearing cache: " + e.Message);
+        //    }
+        //}
 
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(int id, User user)
@@ -281,9 +264,6 @@ namespace SkillSearchAPI.Controllers
                 {
                     _context.Update(user);
                     await _context.SaveChangesAsync();
-
-                    _cache.Remove($"user_{id}");
-                    _cache.Remove("usersList");
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
@@ -356,10 +336,6 @@ namespace SkillSearchAPI.Controllers
 
                 _context.Update(userToUpdate);
                 await _context.SaveChangesAsync();
-
-                // Clear the cache for the updated user
-                _cache.Remove($"user_{userToUpdate.Id}");
-                _cache.Remove("usersList");
 
                 return Ok();
             }
