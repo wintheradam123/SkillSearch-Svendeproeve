@@ -371,6 +371,32 @@ namespace SkillSearchAPI.Controllers
             }
         }
 
+        [HttpPut("ChangeRole")]
+        public async Task<IActionResult> ChangeRole(User user)
+        {
+            try
+            {
+                var userToUpdate =
+                    await _context.Users.FirstOrDefaultAsync(x => x.UserPrincipalName == user.UserPrincipalName);
+
+                if (userToUpdate == null)
+                {
+                    return NotFound();
+                }
+
+                userToUpdate.Role = user.Role;
+
+                _context.Update(userToUpdate);
+                await _context.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return BadRequest("Error occurred while changing role: " + e.Message);
+            }
+        }
+
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.Id == id);
