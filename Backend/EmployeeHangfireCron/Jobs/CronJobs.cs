@@ -62,7 +62,7 @@ namespace GraphCronJob.Jobs
                 await _userController.DeleteUsers(deleteUsers, algoliaSettings);
 
                 // TODO: Add this when caching is setup
-                //await ClearCacheApi();
+                await ClearCacheApi();
             }
             catch (Exception e)
             {
@@ -215,7 +215,7 @@ namespace GraphCronJob.Jobs
         private static async Task ClearCacheApi()
         {
             var client = new HttpClient();
-            await client.GetAsync("http://localhost:7270/api/user/clearCache");
+            await client.GetAsync("https://localhost:7208/api/user/clearCache");
         }
 
         private async Task IndexJobTitles(List<User> users, AlgoliaSettings algoliaSettings)
