@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Shared;
 using Shared.Helpers;
 using Shared.Models;
@@ -16,12 +17,14 @@ namespace SkillSearchAPI.Controllers
         private readonly Context _context;
         private readonly AlgoliaSettings _algoliaSettingsProjects;
         private readonly AlgoliaSettings _algoliaSettingsUsers;
+        private readonly IMemoryCache _cache;
 
-        public ProjectController(Context context)
+        public ProjectController(Context context, IMemoryCache cache)
         {
             _context = context;
             _algoliaSettingsProjects = AlgoliaHelper.LoadAlgoliaSettingsProjects();
             _algoliaSettingsUsers = AlgoliaHelper.LoadAlgoliaSettingsUsers();
+            _cache = cache;
         }
 
         // GET: api/Skill
@@ -30,15 +33,25 @@ namespace SkillSearchAPI.Controllers
         {
             try
             {
-                return await _context.Solutions
-                    .OrderBy(on => on.Title)
-                    .Select(s => new Solution()
-                    {
-                        Id = s.Id,
-                        Title = s.Title,
-                        Users = s.Users
-                    })
-                    .ToListAsync();
+                if (!_cache.TryGetValue("solutionsList", out List<Solution> solutions))
+                {
+                    solutions = await _context.Solutions
+                        .OrderBy(on => on.Title)
+                        .Select(s => new Solution()
+                        {
+                            Id = s.Id,
+                            Title = s.Title,
+                            Users = s.Users
+                        })
+                        .ToListAsync();
+
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+
+                    _cache.Set("solutionsList", solutions, cacheEntryOptions);
+                }
+
+                return Ok(solutions);
             }
             catch (Exception e)
             {
@@ -52,14 +65,22 @@ namespace SkillSearchAPI.Controllers
         {
             try
             {
-                var solutions = await _context.Solutions.FindAsync(id);
-
-                if (solutions == null)
+                if (!_cache.TryGetValue($"solution_{id}", out Solution solution))
                 {
-                    return NotFound();
+                    solution = await _context.Solutions.FindAsync(id);
+
+                    if (solution == null)
+                    {
+                        return NotFound();
+                    }
+
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+
+                    _cache.Set($"solution_{id}", solution, cacheEntryOptions);
                 }
 
-                return solutions;
+                return solution;
             }
             catch (Exception e)
             {
@@ -106,6 +127,10 @@ namespace SkillSearchAPI.Controllers
                 {
                     _context.Update(solution);
                     await _context.SaveChangesAsync();
+
+                    // Clear the cache for the updated solution
+                    _cache.Remove($"solution_{id}");
+                    _cache.Remove("solutionsList");
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
@@ -123,20 +148,6 @@ namespace SkillSearchAPI.Controllers
 
                     var solutionsToUpdate = AlgoliaHelperSolutions.TransformToAlgolia(algSolutions);
                     await AlgoliaHelperSolutions.PartialUpdate(solutionsToUpdate, _algoliaSettingsProjects);
-
-                    //// TODO: I don't like this way of doing it... Look at alternatives
-                    //var userIds = solution.Users?.Select(u => u.Id).ToList();
-                    //if (userIds != null && userIds.Any())
-                    //{
-                    //    var usersToUpdateAlgolia = await _context.Users
-                    //        .Include(u => u.Solutions)
-                    //        .Include(u => u.Skills)
-                    //        .Where(u => userIds.Contains(u.Id))
-                    //        .ToListAsync();
-
-                    //    var algUsers = AlgoliaHelper.TransformUsersToAlgoliaUsers(usersToUpdateAlgolia);
-                    //    await AlgoliaHelper.PartialUpdateUsers(algUsers);
-                    //}
                 }
                 catch (Exception e)
                 {
@@ -147,7 +158,7 @@ namespace SkillSearchAPI.Controllers
             }
             catch (Exception e)
             {
-                return BadRequest("Error occurred while editing skill: " + e.Message);
+                return BadRequest("Error occurred while editing solution: " + e.Message);
             }
         }
 
@@ -249,6 +260,9 @@ namespace SkillSearchAPI.Controllers
                 _context.Solutions.Add(solution);
                 await _context.SaveChangesAsync();
 
+                // Clear the cache for the solutions list
+                _cache.Remove("solutionsList");
+
                 try
                 {
                     var alg = new List<Solution> { solution };
@@ -294,6 +308,10 @@ namespace SkillSearchAPI.Controllers
 
                 _context.Solutions.Remove(solution);
                 await _context.SaveChangesAsync();
+
+                // Clear the cache for the deleted solution and the solutions list
+                _cache.Remove($"solution_{id}");
+                _cache.Remove("solutionsList");
 
                 return solution;
             }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Shared;
 using Shared.Helpers;
 using Shared.Models;
@@ -17,11 +18,14 @@ namespace SkillSearchAPI.Controllers
         private readonly AlgoliaSettings _algoliaSettingsSkills;
         private readonly AlgoliaSettings _algoliaSettingsUsers;
 
-        public SkillController(Context context)
+        private IMemoryCache _cache;
+
+        public SkillController(Context context, IMemoryCache cache)
         {
             _context = context;
             _algoliaSettingsSkills = AlgoliaHelper.LoadAlgoliaSettingsSkills();
             _algoliaSettingsUsers = AlgoliaHelper.LoadAlgoliaSettingsUsers();
+            _cache = cache;
         }
 
         // GET: api/Skill
@@ -30,16 +34,26 @@ namespace SkillSearchAPI.Controllers
         {
             try
             {
-                return await _context.Skills
-                    .OrderBy(on => on.Title)
-                    .Select(s => new Skill
-                    {
-                        Id = s.Id,
-                        Title = s.Title,
-                        Category = s.Category,
-                        Users = s.Users
-                    })
-                    .ToListAsync();
+                if (!_cache.TryGetValue("skillsList", out List<Skill>? skills))
+                {
+                    skills = await _context.Skills
+                        .OrderBy(on => on.Title)
+                        .Select(s => new Skill
+                        {
+                            Id = s.Id,
+                            Title = s.Title,
+                            Category = s.Category,
+                            Users = s.Users
+                        })
+                        .ToListAsync();
+
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+
+                    _cache.Set("skillsList", skills, cacheEntryOptions);
+                }
+
+                return Ok(skills);
             }
             catch (Exception e)
             {
@@ -52,15 +66,25 @@ namespace SkillSearchAPI.Controllers
         {
             try
             {
-                return await _context.Skills
-                    .OrderBy(on => on.Title)
-                    .Select(s => new Skill
-                    {
-                        Id = s.Id,
-                        Title = s.Title,
-                        Category = s.Category
-                    })
-                    .ToListAsync();
+                if (!_cache.TryGetValue("skillsWithoutUsersList", out List<Skill> skills))
+                {
+                    skills = await _context.Skills
+                        .OrderBy(on => on.Title)
+                        .Select(s => new Skill
+                        {
+                            Id = s.Id,
+                            Title = s.Title,
+                            Category = s.Category
+                        })
+                        .ToListAsync();
+
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+
+                    _cache.Set("skillsWithoutUsersList", skills, cacheEntryOptions);
+                }
+
+                return Ok(skills);
             }
             catch (Exception e)
             {
@@ -74,7 +98,16 @@ namespace SkillSearchAPI.Controllers
         {
             try
             {
-                var skill = await _context.Skills.FindAsync(id);
+                if (!_cache.TryGetValue($"skill_{id}", out Skill? skill))
+                {
+                    skill = await _context.Skills.FindAsync(id);
+
+
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
+
+                    _cache.Set($"skill_{id}", skill, cacheEntryOptions);
+                }
 
                 if (skill == null)
                 {
@@ -128,6 +161,11 @@ namespace SkillSearchAPI.Controllers
                 {
                     _context.Update(skill);
                     await _context.SaveChangesAsync();
+
+                    // Clear the cache for the updated skill
+                    _cache.Remove($"skill_{id}");
+                    _cache.Remove("skillsList");
+                    _cache.Remove("skillsWithoutUsersList");
                 }
                 catch (DbUpdateConcurrencyException e)
                 {
@@ -336,6 +374,10 @@ namespace SkillSearchAPI.Controllers
                 _context.Skills.Add(skill);
                 await _context.SaveChangesAsync();
 
+                // Clear the cache for the skills list
+                _cache.Remove("skillsList");
+                _cache.Remove("skillsWithoutUsersList");
+
                 try
                 {
                     var alg = new List<Skill> { skill };
@@ -414,7 +456,6 @@ namespace SkillSearchAPI.Controllers
                     var usersToUpdateAlgolia = AlgoliaHelperUsers.TransformToAlgolia(usersToUpdate);
                     await AlgoliaHelperUsers.PartialUpdate(usersToUpdateAlgolia, _algoliaSettingsUsers);
 
-
                     skill.Users.Clear();
                 }
 
@@ -431,6 +472,11 @@ namespace SkillSearchAPI.Controllers
 
                 _context.Skills.Remove(skill);
                 await _context.SaveChangesAsync();
+
+                // Clear the cache for the deleted skill and the skills list
+                _cache.Remove($"skill_{id}");
+                _cache.Remove("skillsList");
+                _cache.Remove("skillsWithoutUsersList");
 
                 return skill;
             }

@@ -28,6 +28,8 @@ builder.Services.AddDbContext<Context>();
 builder.Services.AddScoped<UserController>();
 builder.Services.AddScoped<SkillController>();
 
+builder.Services.AddMemoryCache();
+
 
 var app = builder.Build();
 
