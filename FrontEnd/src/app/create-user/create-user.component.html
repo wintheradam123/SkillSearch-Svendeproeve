@@ -1,28 +1,39 @@
-<div class="login-container">
-  <form (submit)="createUser(); $event.preventDefault()">
-    <h2>Create User</h2>
-    <div class="input-container">
-      <input
-        type="text"
-        [(ngModel)]="email"
-        placeholder="Email"
-        name="email"
-        class="input-box"
-        required
-      />
-    </div>
-    <div class="input-container">
-      <input
-        type="password"
-        [(ngModel)]="password"
-        placeholder="Password"
-        name="password"
-        class="input-box"
-        required
-      />
-    </div>
-    <button type="submit" class="login-button">Create User</button>
-  </form>
-  <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
-  <p *ngIf="successMessage" class="success-message">{{ successMessage }}</p>
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="card p-4">
+    <h1 class="text-center mb-4">SkillSearch</h1>
+    <form (submit)="createUser(); $event.preventDefault()">
+      <div class="form-group">
+        <input
+          type="text"
+          [(ngModel)]="email"
+          placeholder="Email"
+          name="email"
+          class="form-control"
+          required
+        />
+      </div>
+      <div class="form-group mt-3">
+        <input
+          type="password"
+          [(ngModel)]="password"
+          placeholder="Password"
+          name="password"
+          class="form-control"
+          required
+        />
+      </div>
+      <div class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-success mt-4">Create User</button>
+        <button type="button" class="btn btn-secondary mt-4" (click)="goBack()">
+          Back
+        </button>
+      </div>
+    </form>
+    <p *ngIf="errorMessage" class="text-danger text-center mt-3">
+      {{ errorMessage }}
+    </p>
+    <p *ngIf="successMessage" class="text-success text-center mt-3">
+      {{ successMessage }}
+    </p>
+  </div>
 </div>

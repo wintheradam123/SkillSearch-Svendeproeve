@@ -1,28 +1,41 @@
-<div class="login-container">
-  <form (submit)="login(); $event.preventDefault()">
-    <h2>Login</h2>
-    <div class="input-container">
-      <input
-        type="text"
-        [(ngModel)]="username"
-        placeholder="Email"
-        name="username"
-        class="input-box"
-      />
-    </div>
-    <div class="input-container">
-      <input
-        type="password"
-        [(ngModel)]="password"
-        placeholder="Password"
-        name="password"
-        class="input-box"
-      />
-    </div>
-    <button type="submit" class="login-button">Login</button>
-    <button type="button" class="create-button" [routerLink]="['/create-user']">
-      Create User
-    </button>
-  </form>
-  <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+<div class="container d-flex justify-content-center align-items-center vh-100">
+  <div class="card p-4">
+    <h1 class="text-center mb-4">SkillSearch</h1>
+    <form (submit)="login(); $event.preventDefault()">
+      <div class="form-group">
+        <input
+          type="text"
+          [(ngModel)]="username"
+          placeholder="Email"
+          name="username"
+          class="form-control"
+        />
+      </div>
+      <div class="form-group mt-3">
+        <input
+          type="password"
+          [(ngModel)]="password"
+          placeholder="Password"
+          name="password"
+          class="form-control"
+        />
+      </div>
+      <div class="d-flex justify-content-between mt-4">
+        <button type="submit" class="btn btn-success flex-fill me-2">
+          Login
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary flex-fill ms-2"
+          class="btn btn-success flex-fill me-2"
+          [routerLink]="['/create-user']"
+        >
+          Create User
+        </button>
+      </div>
+    </form>
+    <p *ngIf="errorMessage" class="text-danger text-center mt-3">
+      {{ errorMessage }}
+    </p>
+  </div>
 </div>
