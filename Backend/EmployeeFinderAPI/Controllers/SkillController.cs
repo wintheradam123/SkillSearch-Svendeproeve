@@ -194,12 +194,12 @@ namespace SkillSearchAPI.Controllers
         {
             if (id != skillUpdateDto.Id)
             {
-                return BadRequest("ID's does not match");
+                return BadRequest("ID's do not match");
             }
 
             if (subscribe is not ("subscribe" or "unsubscribe"))
             {
-                return BadRequest("Subscribe has to be sub or unsubbed.");
+                return BadRequest("Subscribe has to be 'subscribe' or 'unsubscribe'.");
             }
 
             if (skillUpdateDto.UserId == 0)
@@ -207,35 +207,40 @@ namespace SkillSearchAPI.Controllers
                 return BadRequest("UserId cannot be null");
             }
 
-            // Selects the Skill from DB using the Id
-            var skill = await _context.Skills.Include(s => s.Users).FirstOrDefaultAsync(s => s.Id == id);
-
-            if (skill == null)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                return NotFound();
-            }
+                // Selects the Skill from DB using the Id
+                var skill = await _context.Skills.Include(s => s.Users).FirstOrDefaultAsync(s => s.Id == id);
 
-            //// Update the skill properties
-            //skill.Tag = skillUpdateDto.Tag;
-
-            // Retrieve the user with the specified ID
-            var user = await _context.Users /*.Include(u => u.Skills)*/
-                .FirstOrDefaultAsync(x => x.Id == skillUpdateDto.UserId);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            switch (subscribe)
-            {
-                case "subscribe":
+                if (skill == null)
                 {
-                    // Add the retrieved users to the skill's list of users
-                    skill.Users.Add(user);
+                    return NotFound();
+                }
 
-                    await _context.SaveChangesAsync();
+                // Retrieve the user with the specified ID
+                var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == skillUpdateDto.UserId);
 
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                switch (subscribe)
+                {
+                    case "subscribe":
+                        // Add the retrieved users to the skill's list of users
+                        skill.Users.Add(user);
+                        break;
+                    case "unsubscribe":
+                        skill.Users.Remove(user);
+                        break;
+                }
+
+                await _context.SaveChangesAsync();
+
+                try
+                {
                     user = await _context.Users
                         .Include(u => u.Skills)
                         .Include(u => u.Solutions)
@@ -245,34 +250,28 @@ namespace SkillSearchAPI.Controllers
 
                     var algUsers = AlgoliaHelperUsers.TransformToAlgolia(users);
                     await AlgoliaHelperUsers.PartialUpdate(algUsers, _algoliaSettingsUsers);
-                    break;
+
+                    await transaction.CommitAsync();
                 }
-                case "unsubscribe":
+                catch (Exception e)
                 {
-                    skill.Users.Remove(user);
-                    //skill.Users.RemoveRange(users);
-
-                    await _context.SaveChangesAsync();
-
-                    user = await _context.Users
-                        .Include(u => u.Skills)
-                        .Include(u => u.Solutions)
-                        .FirstOrDefaultAsync(x => x.Id == skillUpdateDto.UserId);
-
-                    var users = new List<User> { user };
-
-                    var algUsers = AlgoliaHelperUsers.TransformToAlgolia(users);
-                    await AlgoliaHelperUsers.PartialUpdate(algUsers, _algoliaSettingsUsers);
-                    break;
+                    await transaction.RollbackAsync();
+                    Console.WriteLine(e);
+                    return BadRequest("Error occurred while updating Algolia: " + e.Message);
                 }
-            }
 
-            if (skill.Users != null && skill.Users.Any())
+                if (skill.Users != null && skill.Users.Any())
+                {
+                    skill.Users.Clear();
+                }
+
+                return Ok(skill);
+            }
+            catch (Exception e)
             {
-                skill.Users.Clear();
+                await transaction.RollbackAsync();
+                return BadRequest("Error occurred while subscribing/unsubscribing skill: " + e.Message);
             }
-
-            return Ok(skill);
         }
 
         //[HttpPut("UpdateUserSkills")]
@@ -359,6 +358,7 @@ namespace SkillSearchAPI.Controllers
         [HttpPost("list")]
         public async Task<ActionResult<Skill>> PostSkills(List<Skill> skills)
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var alg = new List<Skill>();
@@ -366,27 +366,31 @@ namespace SkillSearchAPI.Controllers
                 foreach (var skill in skills)
                 {
                     _context.Skills.Add(skill);
-
                     alg.Add(skill);
                 }
+
+                await _context.SaveChangesAsync();
 
                 try
                 {
                     var skillsToUpdateAlgolia = AlgoliaHelperSkills.TransformToAlgolia(alg);
                     await AlgoliaHelperSkills.Index(skillsToUpdateAlgolia, _algoliaSettingsSkills);
+
+                    await transaction.CommitAsync();
                 }
                 catch (Exception e)
                 {
+                    await transaction.RollbackAsync();
                     Console.WriteLine(e);
+                    return BadRequest("Error occurred while updating Algolia: " + e.Message);
                 }
-
-                await _context.SaveChangesAsync();
 
                 return Ok(skills);
             }
             catch (Exception e)
             {
-                return BadRequest("Error occurred while saving skills:" + e.Message);
+                await transaction.RollbackAsync();
+                return BadRequest("Error occurred while saving skills: " + e.Message);
             }
         }
 
@@ -394,6 +398,7 @@ namespace SkillSearchAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Skill>> DeleteSkill(int id)
         {
+            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var skill = await _context.Skills.Include(s => s.Users).FirstOrDefaultAsync(x => x.Id == id);
@@ -411,31 +416,37 @@ namespace SkillSearchAPI.Controllers
                         user.Skills.Remove(skill);
                     }
 
-                    var usersToUpdateAlgolia = AlgoliaHelperUsers.TransformToAlgolia(usersToUpdate);
-                    await AlgoliaHelperUsers.PartialUpdate(usersToUpdateAlgolia, _algoliaSettingsUsers);
-
-
                     skill.Users.Clear();
+                }
+
+                _context.Skills.Remove(skill);
+                await _context.SaveChangesAsync();
+
+                if (skill.Users != null && skill.Users.Any())
+                {
+                    var usersToUpdateAlgolia = AlgoliaHelperUsers.TransformToAlgolia(skill.Users.ToList());
+                    await AlgoliaHelperUsers.PartialUpdate(usersToUpdateAlgolia, _algoliaSettingsUsers);
                 }
 
                 try
                 {
                     var idsToDelete = new List<string> { skill.Id.ToString() };
                     await AlgoliaHelperSkills.Delete(idsToDelete, _algoliaSettingsSkills);
+
+                    await transaction.CommitAsync();
                 }
                 catch (Exception e)
                 {
+                    await transaction.RollbackAsync();
                     Console.WriteLine(e);
-                    throw;
+                    return BadRequest("Error occurred while updating Algolia: " + e.Message);
                 }
-
-                _context.Skills.Remove(skill);
-                await _context.SaveChangesAsync();
 
                 return skill;
             }
             catch (Exception e)
             {
+                await transaction.RollbackAsync();
                 return BadRequest("Error occurred while deleting skill: " + e.Message);
             }
         }
