@@ -125,18 +125,18 @@ namespace SkillSearchAPI.Controllers
                     await AlgoliaHelperSolutions.PartialUpdate(solutionsToUpdate, _algoliaSettingsProjects);
 
                     //// TODO: I don't like this way of doing it... Look at alternatives
-                    //var userIds = solution.Users?.Select(u => u.Id).ToList();
-                    //if (userIds != null && userIds.Any())
-                    //{
-                    //    var usersToUpdateAlgolia = await _context.Users
-                    //        .Include(u => u.Solutions)
-                    //        .Include(u => u.Skills)
-                    //        .Where(u => userIds.Contains(u.Id))
-                    //        .ToListAsync();
+                    var userIds = solution.Users?.Select(u => u.Id).ToList();
+                    if (userIds != null && userIds.Any())
+                    {
+                        var usersToUpdateAlgolia = await _context.Users
+                            .Include(u => u.Solutions)
+                            .Include(u => u.Skills)
+                            .Where(u => userIds.Contains(u.Id))
+                            .ToListAsync();
 
-                    //    var algUsers = AlgoliaHelper.TransformUsersToAlgoliaUsers(usersToUpdateAlgolia);
-                    //    await AlgoliaHelper.PartialUpdateUsers(algUsers);
-                    //}
+                        var algUsers = AlgoliaHelperUsers.TransformToAlgolia(usersToUpdateAlgolia);
+                        await AlgoliaHelperUsers.PartialUpdate(algUsers, _algoliaSettingsUsers);
+                    }
                 }
                 catch (Exception e)
                 {
