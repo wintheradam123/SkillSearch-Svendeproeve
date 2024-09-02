@@ -39,7 +39,7 @@ export class DashboardComponent implements OnInit {
   // Algolia credentials
   algoliaAppId: string = 'UW17LRXEG9';
   algoliaApiKey: string = '21a8d95e001480809f816fdebcdeee77';
-  algoliaIndexName: string = 'dev_SkillSearch_Users';
+  algoliaIndexName: string = 'dev_SkillSearch_Users_Nicky';
 
   private algoliaClient: any;
   private algoliaIndex: any;

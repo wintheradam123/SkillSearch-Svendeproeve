@@ -12,7 +12,7 @@ namespace Shared.Helpers
 {
     public class AlgoliaHelperJobTitles
     {
-        public const string IndexName = "dev_SkillSearch_Jobtitles";
+        public const string IndexName = "dev_SkillSearch_Jobtitles_Nicky";
 
         public static async Task Index(IEnumerable<AlgoliaJobTitle> jobTitles, AlgoliaSettings settings)
         {
