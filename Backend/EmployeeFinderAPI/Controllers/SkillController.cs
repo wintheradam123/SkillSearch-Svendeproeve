@@ -398,7 +398,6 @@ namespace SkillSearchAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Skill>> DeleteSkill(int id)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var skill = await _context.Skills.Include(s => s.Users).FirstOrDefaultAsync(x => x.Id == id);
@@ -416,37 +415,31 @@ namespace SkillSearchAPI.Controllers
                         user.Skills.Remove(skill);
                     }
 
-                    skill.Users.Clear();
-                }
-
-                _context.Skills.Remove(skill);
-                await _context.SaveChangesAsync();
-
-                if (skill.Users != null && skill.Users.Any())
-                {
-                    var usersToUpdateAlgolia = AlgoliaHelperUsers.TransformToAlgolia(skill.Users.ToList());
+                    var usersToUpdateAlgolia = AlgoliaHelperUsers.TransformToAlgolia(usersToUpdate);
                     await AlgoliaHelperUsers.PartialUpdate(usersToUpdateAlgolia, _algoliaSettingsUsers);
+
+
+                    skill.Users.Clear();
                 }
 
                 try
                 {
                     var idsToDelete = new List<string> { skill.Id.ToString() };
                     await AlgoliaHelperSkills.Delete(idsToDelete, _algoliaSettingsSkills);
-
-                    await transaction.CommitAsync();
                 }
                 catch (Exception e)
                 {
-                    await transaction.RollbackAsync();
                     Console.WriteLine(e);
-                    return BadRequest("Error occurred while updating Algolia: " + e.Message);
+                    throw;
                 }
+
+                _context.Skills.Remove(skill);
+                await _context.SaveChangesAsync();
 
                 return skill;
             }
             catch (Exception e)
             {
-                await transaction.RollbackAsync();
                 return BadRequest("Error occurred while deleting skill: " + e.Message);
             }
         }

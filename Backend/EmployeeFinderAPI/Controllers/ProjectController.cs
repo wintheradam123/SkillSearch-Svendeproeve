@@ -275,7 +275,6 @@ namespace SkillSearchAPI.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<Solution>> DeleteSolution(int id)
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var solution = await _context.Solutions.FindAsync(id);
@@ -284,28 +283,24 @@ namespace SkillSearchAPI.Controllers
                     return NotFound();
                 }
 
-                _context.Solutions.Remove(solution);
-                await _context.SaveChangesAsync();
-
                 try
                 {
                     var idsToDelete = new List<string> { solution.Id.ToString() };
                     await AlgoliaHelperSolutions.Delete(idsToDelete, _algoliaSettingsProjects);
-
-                    await transaction.CommitAsync();
                 }
                 catch (Exception e)
                 {
-                    await transaction.RollbackAsync();
                     Console.WriteLine(e);
-                    return BadRequest("Error occurred while updating Algolia: " + e.Message);
+                    throw;
                 }
+
+                _context.Solutions.Remove(solution);
+                await _context.SaveChangesAsync();
 
                 return solution;
             }
             catch (Exception e)
             {
-                await transaction.RollbackAsync();
                 return BadRequest("Error occurred while deleting solution: " + e.Message);
             }
         }
