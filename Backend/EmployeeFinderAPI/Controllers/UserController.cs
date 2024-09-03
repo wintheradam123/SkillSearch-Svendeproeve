@@ -56,14 +56,14 @@ namespace SkillSearchAPI.Controllers
                     })
                     .ToListAsync();
 
-                    var metadata = new
-                    {
-                        users.Count
-                    };
+                var metadata = new
+                {
+                    users.Count
+                };
 
-                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                    return Ok(users);
+                return Ok(users);
             }
             catch (Exception e)
             {
