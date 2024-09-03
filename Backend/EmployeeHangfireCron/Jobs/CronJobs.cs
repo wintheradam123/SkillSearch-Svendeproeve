@@ -41,7 +41,7 @@ namespace GraphCronJob.Jobs
                 // Enrich the AD User object with photos, slack name before saving it.
                 //var enrichedUsers = await ApplyUserPhotos(filteredUsers);
 
-                // I don't know what this list contains or is used for. So I'm not gonna use it for now.
+                // Unused list for now. Can be used to return/log/save the users that are added to the DB.
                 var responseUserList = new List<User>();
                 responseUserList.AddRange(await _userController.PostUsersAndUpdate(usersWithRoles, algoliaSettings));
 

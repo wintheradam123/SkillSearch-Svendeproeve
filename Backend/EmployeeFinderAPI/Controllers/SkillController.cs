@@ -207,7 +207,7 @@ namespace SkillSearchAPI.Controllers
                 return BadRequest("UserId cannot be null");
             }
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            await using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 // Selects the Skill from DB using the Id
